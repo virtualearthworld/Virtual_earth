@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Earth — Explore a World of Possibilities</title>
+<meta name="description" content="Explore a growing virtual world built around the places and geography of Earth.">
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#101e31;--panel2:#162941;--text:#eef5ff;--muted:#a8bad1;--accent:#69d7b0;--line:#2b4059}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top,#173251 0,#08111f 55%);color:var(--text);min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px max(20px,calc((100vw - 1120px)/2));border-bottom:1px solid #ffffff16}
+.brand{font-weight:800;letter-spacing:.3px;font-size:1.15rem}.brand span{color:var(--accent)}.tag{font-size:.85rem;color:var(--muted)}
+main{max-width:1120px;margin:auto;padding:44px 20px 60px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center}
+.eyebrow{color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem}
+h1{font-size:clamp(2.3rem,6vw,4.4rem);line-height:1.02;margin:14px 0 18px;letter-spacing:-2px}
+p{color:var(--muted);line-height:1.65}.hero p{max-width:620px;font-size:1.06rem}
+.earth{min-height:270px;border:1px solid var(--line);border-radius:28px;background:linear-gradient(145deg,#122b43,#0a1727);display:grid;place-items:center;position:relative;overflow:hidden}
+.globe{width:210px;height:210px;border-radius:50%;background:radial-gradient(circle at 32% 25%,#9af0c2 0 3%,transparent 4%),radial-gradient(ellipse at 32% 45%,#4db78d 0 15%,transparent 16%),radial-gradient(ellipse at 68% 35%,#58bd8c 0 13%,transparent 14%),radial-gradient(ellipse at 55% 72%,#3e9c79 0 19%,transparent 20%),radial-gradient(circle at 35% 30%,#3c9ec3,#174f76 60%,#0b2945);box-shadow:inset -18px -12px 30px #06111c,0 0 50px #4ccfa133}
+section{margin-top:44px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}h2{font-size:1.55rem;margin:0 0 8px}.search{width:min(100%,340px);padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1727;color:var(--text);font:inherit}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s}.card:hover,.card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.emoji{font-size:1.8rem}.card h3{margin:10px 0 5px}.card p{font-size:.92rem;margin:0}.detail{margin-top:18px;padding:22px;border-radius:18px;background:#0b1929;border:1px solid var(--line);display:none}.detail.open{display:block}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button.action{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#072219}button.secondary{background:#1c3048;color:var(--text);border:1px solid var(--line)}.note{font-size:.82rem;margin-top:25px;border-top:1px solid var(--line);padding-top:18px}
+footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:var(--muted);font-size:.85rem}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.earth{min-height:220px}.globe{width:170px;height:170px}.grid{grid-template-columns:1fr 1fr}h1{letter-spacing:-1px}}
+@media(max-width:460px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="brand">🌐 Virtual <span>Earth</span></div><div class="tag">A world to explore. A foundation to grow.</div></header>
+<main>
+<div class="hero">
+<div><div class="eyebrow">The beginning of a virtual world</div><h1>Explore Earth.<br><span style="color:var(--accent)">Imagine what’s next.</span></h1><p>Start with the continents and places of our real world. This early foundation will grow step by step into a richer virtual experience.</p></div>
+<div class="earth" aria-label="Stylized globe illustration"><div class="globe"></div></div>
+</div>
+<section>
+<div class="section-head"><div><h2>Choose a region</h2><p style="margin:0">Select a continent to begin exploring.</p></div><input id="search" class="search" type="search" placeholder="Search continents…" aria-label="Search continents"></div>
+<div id="regions" class="grid">
+<button class="card" data-name="Africa" data-desc="Explore countries, cities, and destinations across Africa."><span class="emoji">🌍</span><h3>Africa</h3><p>Countries, cities, and destinations.</p></button>
+<button class="card" data-name="Asia" data-desc="Explore the many countries, cultures, and cities of Asia."><span class="emoji">🏯</span><h3>Asia</h3><p>A vast region of places to discover.</p></button>
+<button class="card" data-name="Europe" data-desc="Explore historic cities and destinations across Europe."><span class="emoji">🏰</span><h3>Europe</h3><p>Historic places and modern cities.</p></button>
+<button class="card" data-name="North America" data-desc="Begin with Canada, the United States, Mexico, and more."><span class="emoji">🏙️</span><h3>North America</h3><p>Canada, the United States, Mexico, and more.</p></button>
+<button class="card" data-name="South America" data-desc="Explore countries, landscapes, and cities in South America."><span class="emoji">🌿</span><h3>South America</h3><p>Landscapes, cities, and cultures.</p></button>
+<button class="card" data-name="Oceania" data-desc="Explore Australia, New Zealand, and Pacific island destinations."><span class="emoji">🏝️</span><h3>Oceania</h3><p>Australia and Pacific island destinations.</p></button>
+</div>
+<div id="detail" class="detail" aria-live="polite"><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore destination</button><button class="action secondary" id="saveBtn">Save destination</button></div><p id="status" style="margin-bottom:0"></p></div>
+</section>
+<p class="note">Foundation preview: this version is a starting point. The region selector and saved destinations work in your browser; detailed maps, accounts, virtual economy, and multiplayer features can be added in later stages.</p>
+</main>
+<footer>Virtual Earth · Early foundation build</footer>
+<script>
+const cards=[...document.querySelectorAll('.card')];let selected=null;
+const detail=document.getElementById('detail'),title=document.getElementById('detailTitle'),desc=document.getElementById('detailText'),status=document.getElementById('status');
+cards.forEach(card=>card.addEventListener('click',()=>{selected={name:card.dataset.name,desc:card.dataset.desc};title.textContent=selected.name;desc.textContent=selected.desc;status.textContent='';detail.classList.add('open');detail.scrollIntoView({behavior:'smooth',block:'nearest'})}));
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();cards.forEach(c=>c.hidden=!c.dataset.name.toLowerCase().includes(q))});
+document.getElementById('exploreBtn').addEventListener('click',()=>{if(selected)status.textContent='You selected '+selected.name+'. More detailed destinations will be added in the next development stage.'});
+document.getElementById('saveBtn').addEventListener('click',()=>{if(!selected)return;let saved=[];try{saved=JSON.parse(localStorage.getItem('virtualEarthSaved')||'[]')}catch{}if(!saved.includes(selected.name))saved.push(selected.name);localStorage.setItem('virtualEarthSaved',JSON.stringify(saved));status.textContent='Saved '+selected.name+' in this browser.'});
+</script>
+</body>
+</html>
