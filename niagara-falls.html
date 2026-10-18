@@ -51,7 +51,9 @@ const places=[
 {name:"Niagara SkyWheel",lat:43.0901,lon:-79.0788,zoom:17,desc:"Observation wheel in the Clifton Hill entertainment district."},
 ];
 const map=L.map('map').setView([43.0896,-79.0849],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const primaryTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+let backupTilesStarted=false;
+primaryTiles.on('tileerror',()=>{if(backupTilesStarted)return;backupTilesStarted=true;map.removeLayer(primaryTiles);L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);document.getElementById('status').textContent='Switched to the backup street-map source.';});
 const markerLayer=L.layerGroup().addTo(map);
 const allMarkers=L.layerGroup().addTo(map);
 const markerByName=new Map();
