@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toronto City Explorer | Virtual Earth</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#102139;--text:#eef5ff;--muted:#afc0d5;--accent:#69d7b0;--line:#2b4059}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#173251,#08111f 60%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:18px max(18px,calc((100vw - 1100px)/2));border-bottom:1px solid #ffffff20;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap}.brand{font-weight:800}.brand span{color:var(--accent)}a{color:var(--accent)}.back{border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-decoration:none;background:#13253a}
+main{max-width:1100px;margin:auto;padding:28px 18px 50px}.eyebrow{color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-size:.75rem;font-weight:700}h1{font-size:clamp(2rem,5vw,3.5rem);margin:8px 0}p{color:var(--muted);line-height:1.6}.layout{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:22px}.panel{border:1px solid var(--line);border-radius:16px;background:#0e1d30;overflow:hidden}#map{height:520px;width:100%;background:#dbe7ed}.mapnote{padding:10px 14px;margin:0;font-size:.8rem}.side{padding:18px}.side h2{margin-top:0}.neighbourhoods{display:grid;gap:9px}.hood{width:100%;text-align:left;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);cursor:pointer;font:inherit}.hood:hover,.hood:focus{border-color:var(--accent)}.hood strong{display:block}.hood small{color:var(--muted)}.info{margin-top:16px;padding:14px;border-radius:12px;background:#152b42}.info p{margin-bottom:0}.featuregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.feature{padding:16px;border:1px solid var(--line);border-radius:14px;background:#102139}.feature h3{margin:6px 0}.feature p{font-size:.9rem;margin:0}.status{color:var(--accent);min-height:1.5em;font-size:.9rem}@media(max-width:760px){.layout{grid-template-columns:1fr}#map{height:400px}.featuregrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand">🌐 Virtual <span>Earth</span> · Toronto Explorer</div><a class="back" href="./">← Back to Virtual Earth</a></header>
+<main>
+<div class="eyebrow">City exploration · First city page</div>
+<h1>Explore Toronto</h1>
+<p>Start with Toronto’s real street map. Select a neighbourhood to move the map and open its marker. This is the first exploration layer; detailed 3D buildings, property ownership, and virtual businesses will be built later.</p>
+<div class="layout">
+<div class="panel"><div id="map" aria-label="Interactive Toronto street map"></div><p class="mapnote">Street map data © OpenStreetMap contributors. Drag to move and use +/− to zoom.</p></div>
+<aside class="panel side"><h2>Neighbourhoods</h2><p>Choose a place to explore.</p><div class="neighbourhoods" id="neighbourhoods"></div><div class="info"><strong id="placeTitle">Toronto</strong><p id="placeInfo">Welcome to Toronto. Choose a neighbourhood from the list.</p></div><p class="status" id="status" aria-live="polite"></p></aside>
+</div>
+<div class="featuregrid">
+<div class="feature"><div>🗺️</div><h3>Street exploration</h3><p>Pan and zoom around the real street map.</p></div>
+<div class="feature"><div>🏘️</div><h3>Neighbourhoods</h3><p>Select sample neighbourhoods to jump to their locations.</p></div>
+<div class="feature"><div>🏗️</div><h3>Future virtual world</h3><p>Buildings, properties, jobs, and businesses are planned future layers—not implemented yet.</p></div>
+</div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const locations=[
+{name:"Downtown / CN Tower",lat:43.6426,lon:-79.3871,desc:"Toronto’s central skyline and waterfront area. Explore nearby streets and landmarks on the map."},
+{name:"North York",lat:43.7615,lon:-79.4111,desc:"A major urban district north of central Toronto, with commercial areas and residential neighbourhoods."},
+{name:"Scarborough",lat:43.7764,lon:-79.2318,desc:"Explore the eastern part of Toronto, including the wider Scarborough area."},
+{name:"Etobicoke",lat:43.6205,lon:-79.5132,desc:"Explore Toronto’s western district and its connections to the lakeshore."},
+{name:"Yorkville",lat:43.6706,lon:-79.3933,desc:"A central neighbourhood known for shops, galleries, and city streets."},
+{name:"The Beaches",lat:43.6765,lon:-79.2950,desc:"Explore the eastern lakeside neighbourhood and its nearby streets."},
+{name:"Kensington Market",lat:43.6547,lon:-79.4005,desc:"A lively central neighbourhood with small streets and market-area businesses."},
+{name:"High Park",lat:43.6465,lon:-79.4637,desc:"Explore the area around one of Toronto’s best-known large parks."}
+];
+const map=L.map('map').setView([43.6532,-79.3832],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+function choose(item){map.flyTo([item.lat,item.lon],14,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';markerLayer.clearLayers();L.marker([item.lat,item.lon]).addTo(markerLayer).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc).openPopup()}
+const list=document.getElementById('neighbourhoods');
+locations.forEach(item=>{const b=document.createElement('button');b.className='hood';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
+L.marker([43.6532,-79.3832]).addTo(map).bindPopup('Toronto — start exploring').openPopup();
+</script>
+</body>
+</html>
