@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Virtual Earth — Explore a World of Possibilities</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <meta name="description" content="Explore a growing virtual world built around the places and geography of Earth.">
 <style>
 :root{color-scheme:dark;--bg:#08111f;--panel:#101e31;--panel2:#162941;--text:#eef5ff;--muted:#a8bad1;--accent:#69d7b0;--line:#2b4059}
@@ -21,7 +22,7 @@ p{color:var(--muted);line-height:1.65}.hero p{max-width:620px;font-size:1.06rem}
 @keyframes earth-turn{from{background-position:0% center}to{background-position:100% center}}
 @media (prefers-reduced-motion:reduce){.globe{animation:none}}
 section{margin-top:44px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}h2{font-size:1.55rem;margin:0 0 8px}.search{width:min(100%,340px);padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1727;color:var(--text);font:inherit}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s}.card:hover,.card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.emoji{font-size:1.8rem}.card h3{margin:10px 0 5px}.card p{font-size:.92rem;margin:0}.detail{margin-top:18px;padding:22px;border-radius:18px;background:#0b1929;border:1px solid var(--line);display:none}.detail.open{display:block}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button.action{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#072219}button.secondary{background:#1c3048;color:var(--text);border:1px solid var(--line)}.note{font-size:.82rem;margin-top:25px;border-top:1px solid var(--line);padding-top:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s}.card:hover,.card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.emoji{font-size:1.8rem}.card h3{margin:10px 0 5px}.card p{font-size:.92rem;margin:0}.detail{margin-top:18px;padding:22px;border-radius:18px;background:#0b1929;border:1px solid var(--line);display:none}.detail.open{display:block}#mapPanel{margin-top:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a1727}#mapHeading{padding:14px 16px;margin:0;color:var(--text);font-size:1rem}#worldMap{height:340px;width:100%;background:#dbe7ed}#mapCaption{padding:10px 16px;margin:0;font-size:.85rem}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button.action{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#072219}button.secondary{background:#1c3048;color:var(--text);border:1px solid var(--line)}.note{font-size:.82rem;margin-top:25px;border-top:1px solid var(--line);padding-top:18px}
 footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:var(--muted);font-size:.85rem}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.earth{min-height:220px}.globe{width:170px;height:170px}.grid{grid-template-columns:1fr 1fr}h1{letter-spacing:-1px}}
 @media(max-width:460px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
@@ -45,15 +46,58 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <button class="card" data-name="Oceania" data-desc="Explore Australia, New Zealand, and Pacific island destinations."><span class="emoji">🏝️</span><h3>Oceania</h3><p>Australia and Pacific island destinations.</p></button>
 </div>
 <div style="margin-top:18px"><input id="placeSearch" class="search" style="width:100%;max-width:none" type="search" placeholder="Search countries and cities, e.g. India or Tokyo" aria-label="Search countries and cities"><div id="placeResults" class="grid" style="margin-top:12px"></div></div>
-<div id="detail" class="detail" aria-live="polite"><p id="breadcrumb" style="margin:0 0 8px;font-size:.82rem;color:var(--accent)">Earth › Choose a region</p><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore countries</button><button class="action secondary" id="saveBtn">Save destination</button></div><div id="places" class="grid" style="margin-top:18px"></div><div id="savedPanel" style="margin-top:18px"></div><p id="status" style="margin-bottom:0"></p></div>
+<div id="detail" class="detail" aria-live="polite"><p id="breadcrumb" style="margin:0 0 8px;font-size:.82rem;color:var(--accent)">Earth › Choose a region</p><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore countries</button><button class="action secondary" id="saveBtn">Save destination</button></div><div id="places" class="grid" style="margin-top:18px"></div><div id="mapPanel"><h3 id="mapHeading">Interactive world map</h3><div id="worldMap" role="application" aria-label="Interactive map"></div><p id="mapCaption">Choose a country or city to center the map on that place. Map tiles © OpenStreetMap contributors.</p></div><div id="savedPanel" style="margin-top:18px"></div><p id="status" style="margin-bottom:0"></p></div>
 </section>
 <p class="note">Foundation preview: choose a continent, explore sample countries and cities, and save places in this browser. The globe uses NASA Blue Marble satellite-based imagery; accurate interactive maps are a later stage. Accurate interactive maps, accounts, the virtual economy, and multiplayer features are later stages.</p>
 </main>
 <footer>Virtual Earth · Early foundation build</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const cards=[...document.querySelectorAll('.card')];
 let selected=null, currentLevel='region';
 const detail=document.getElementById('detail'),title=document.getElementById('detailTitle'),desc=document.getElementById('detailText'),breadcrumb=document.getElementById('breadcrumb'),status=document.getElementById('status'),places=document.getElementById('places'),exploreBtn=document.getElementById('exploreBtn'),saveBtn=document.getElementById('saveBtn'),savedPanel=document.getElementById('savedPanel');
+const placeCoords={
+  'Africa':[0,20],'Asia':[34,100],'Europe':[50,15],'North America':[45,-100],'South America':[-15,-60],'Oceania':[-20,135],
+  'Nigeria':[9.08,8.68],'Lagos':[6.52,3.38],'Abuja':[9.06,7.49],'Kano':[12.00,8.52],
+  'Egypt':[26.82,30.80],'Cairo':[30.04,31.24],'Alexandria':[31.20,29.92],'Giza':[29.99,31.13],
+  'South Africa':[-30.56,22.94],'Cape Town':[-33.92,18.42],'Johannesburg':[-26.20,28.04],'Durban':[-29.86,31.02],
+  'Kenya':[0.02,37.91],'Nairobi':[-1.29,36.82],'Mombasa':[-4.04,39.67],
+  'India':[22.35,78.67],'Delhi':[28.61,77.21],'Mumbai':[19.08,72.88],'Bengaluru':[12.97,77.59],
+  'China':[35.86,104.20],'Beijing':[39.90,116.40],'Shanghai':[31.23,121.47],'Shenzhen':[22.54,114.06],
+  'Japan':[36.20,138.25],'Tokyo':[35.68,139.69],'Osaka':[34.69,135.50],'Kyoto':[35.01,135.77],
+  'United Arab Emirates':[23.42,53.85],'Dubai':[25.20,55.27],'Abu Dhabi':[24.45,54.65],
+  'United Kingdom':[55.38,-3.44],'London':[51.51,-0.13],'Manchester':[53.48,-2.24],'Edinburgh':[55.95,-3.19],
+  'France':[46.23,2.21],'Paris':[48.86,2.35],'Lyon':[45.76,4.84],'Marseille':[43.30,5.37],
+  'Germany':[51.17,10.45],'Berlin':[52.52,13.40],'Munich':[48.14,11.58],'Hamburg':[53.55,9.99],
+  'Italy':[41.87,12.57],'Rome':[41.90,12.50],'Milan':[45.46,9.19],'Venice':[45.44,12.32],
+  'Canada':[56.13,-106.35],'Toronto':[43.65,-79.38],'Vancouver':[49.28,-123.12],'Montreal':[45.50,-73.57],
+  'United States':[39.83,-98.58],'New York':[40.71,-74.01],'Los Angeles':[34.05,-118.24],'Chicago':[41.88,-87.63],
+  'Mexico':[23.63,-102.55],'Mexico City':[19.43,-99.13],'Guadalajara':[20.67,-103.35],'Monterrey':[25.69,-100.32],
+  'Brazil':[-14.24,-51.93],'São Paulo':[-23.55,-46.63],'Rio de Janeiro':[-22.91,-43.17],'Brasília':[-15.79,-47.88],
+  'Argentina':[-38.42,-63.62],'Buenos Aires':[-34.60,-58.38],'Córdoba':[-31.42,-64.19],
+  'Colombia':[4.57,-74.30],'Bogotá':[4.71,-74.07],'Medellín':[6.25,-75.56],
+  'Peru':[-9.19,-75.02],'Lima':[-12.05,-77.04],'Cusco':[-13.53,-71.97],
+  'Australia':[-25.27,133.78],'Sydney':[-33.87,151.21],'Melbourne':[-37.81,144.96],'Brisbane':[-27.47,153.03],
+  'New Zealand':[-40.90,174.89],'Auckland':[-36.85,174.76],'Wellington':[-41.29,174.78],'Christchurch':[-43.53,172.64],
+  'Fiji':[-17.71,178.07],'Suva':[-18.14,178.44],'Nadi':[-17.78,177.42]
+};
+let worldMap=null, mapMarker=null;
+function updateMap(label, fallback){
+  const target=placeCoords[label]||placeCoords[fallback]||[20,0];
+  const panel=document.getElementById('mapPanel');
+  document.getElementById('mapHeading').textContent='Map view: '+label;
+  document.getElementById('mapCaption').textContent='Centered on '+label+'. Drag to explore and use +/− to zoom. Map tiles © OpenStreetMap contributors.';
+  if(!window.L){document.getElementById('mapCaption').textContent='The interactive map library could not load. Check your internet connection.';return;}
+  if(!worldMap){
+    worldMap=L.map('worldMap').setView(target,placeCoords[label]? (label.length<4?3:label===fallback?5:11):2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(worldMap);
+  }else{
+    worldMap.setView(target, label===fallback?5: (placeCoords[label]? (label.length<4?4:11):2),{animate:true});
+  }
+  if(mapMarker)mapMarker.remove();
+  mapMarker=L.marker(target).addTo(worldMap).bindPopup(label).openPopup();
+  setTimeout(()=>worldMap.invalidateSize(),100);
+}
 const destinationData={
 'Africa':{'Nigeria':['Lagos','Abuja','Kano'],'Egypt':['Cairo','Alexandria','Giza'],'South Africa':['Cape Town','Johannesburg','Durban'],'Kenya':['Nairobi','Mombasa']},
 'Asia':{'India':['Delhi','Mumbai','Bengaluru'],'China':['Beijing','Shanghai','Shenzhen'],'Japan':['Tokyo','Osaka','Kyoto'],'United Arab Emirates':['Dubai','Abu Dhabi']},
@@ -64,8 +108,8 @@ const destinationData={
 };
 function showSaved(){let saved=[];try{saved=JSON.parse(localStorage.getItem('virtualEarthSaved')||'[]')}catch{}savedPanel.innerHTML='<h3>Saved destinations in this browser</h3>'+(saved.length?'<p>'+saved.map(x=>'📍 '+escapeHtml(x)).join(' · ')+'</p>':'<p>No saved places yet. Choose a place and press “Save destination”.</p>')}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function renderOptions(items,level){places.innerHTML='';items.forEach(item=>{const b=document.createElement('button');b.className='card';b.innerHTML='<span class="emoji">'+(level==='country'?'🗺️':'📍')+'</span><h3></h3><p>'+(level==='country'?'Explore cities and destinations':'Select this city as your destination')+'</p>';b.querySelector('h3').textContent=item;b.addEventListener('click',()=>{if(level==='country'){selected={name:item,continent:selected.continent,country:item,desc:'Explore cities in '+item+'.'};currentLevel='cityList';breadcrumb.textContent='Earth › '+selected.continent+' › '+item;title.textContent=item;desc.textContent='Choose a city to continue.';exploreBtn.textContent='Back to countries';saveBtn.disabled=false;renderOptions(destinationData[selected.continent][item]||[], 'city')}else{selected={name:item,continent:selected.continent,country:selected.country,city:item,desc:item+', '+selected.country};breadcrumb.textContent='Earth › '+selected.continent+' › '+selected.country+' › '+item;title.textContent=item;desc.textContent='Destination: '+item+', '+selected.country+'.';status.textContent='You selected '+item+'. This is a sample destination; detailed maps will be added in a later stage.';places.innerHTML='';exploreBtn.textContent='Back to countries';saveBtn.disabled=false}});places.appendChild(b)})}
-cards.forEach(card=>card.addEventListener('click',()=>{selected={name:card.dataset.name,continent:card.dataset.name,desc:card.dataset.desc};currentLevel='region';breadcrumb.textContent='Earth › '+selected.name;title.textContent=selected.name;desc.textContent=selected.desc;status.textContent='';places.innerHTML='';exploreBtn.textContent='Explore countries';saveBtn.disabled=false;detail.classList.add('open');showSaved();detail.scrollIntoView({behavior:'smooth',block:'nearest'})}));
+function renderOptions(items,level){places.innerHTML='';items.forEach(item=>{const b=document.createElement('button');b.className='card';b.innerHTML='<span class="emoji">'+(level==='country'?'🗺️':'📍')+'</span><h3></h3><p>'+(level==='country'?'Explore cities and destinations':'Select this city as your destination')+'</p>';b.querySelector('h3').textContent=item;b.addEventListener('click',()=>{if(level==='country'){selected={name:item,continent:selected.continent,country:item,desc:'Explore cities in '+item+'.'};currentLevel='cityList';breadcrumb.textContent='Earth › '+selected.continent+' › '+item;title.textContent=item;desc.textContent='Choose a city to continue.';updateMap(item,item);exploreBtn.textContent='Back to countries';saveBtn.disabled=false;renderOptions(destinationData[selected.continent][item]||[], 'city')}else{selected={name:item,continent:selected.continent,country:selected.country,city:item,desc:item+', '+selected.country};breadcrumb.textContent='Earth › '+selected.continent+' › '+selected.country+' › '+item;title.textContent=item;desc.textContent='Destination: '+item+', '+selected.country+'.';status.textContent='You selected '+item+'. This is a sample destination; detailed maps will be added in a later stage.';places.innerHTML='';exploreBtn.textContent='Back to countries';saveBtn.disabled=false}});places.appendChild(b)})}
+cards.forEach(card=>card.addEventListener('click',()=>{selected={name:card.dataset.name,continent:card.dataset.name,desc:card.dataset.desc};currentLevel='region';breadcrumb.textContent='Earth › '+selected.name;title.textContent=selected.name;desc.textContent=selected.desc;updateMap(selected.name);status.textContent='';places.innerHTML='';exploreBtn.textContent='Explore countries';saveBtn.disabled=false;detail.classList.add('open');showSaved();detail.scrollIntoView({behavior:'smooth',block:'nearest'})}));
 document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();cards.forEach(c=>c.hidden=!c.dataset.name.toLowerCase().includes(q))});
 exploreBtn.addEventListener('click',()=>{
   if(!selected)return;
@@ -136,6 +180,7 @@ placeSearch.addEventListener('input', () => {
       selected = {name:item.label, continent:item.continent, country:item.country, city:item.kind === 'City' ? item.label : null};
       currentLevel = item.kind === 'City' ? 'city' : 'cityList';
       breadcrumb.textContent = item.kind === 'City' ? 'Earth › ' + item.continent + ' › ' + item.country + ' › ' + item.label : 'Earth › ' + item.continent + ' › ' + item.country;
+      updateMap(item.label,item.country);
       title.textContent = item.label;
       desc.textContent = item.kind === 'City' ? 'Destination: ' + item.label + ', ' + item.country + '.' : 'Country selected. Choose a city from the list below.';
       status.textContent = item.kind === 'City' ? 'You selected ' + item.label + '. This is a sample destination; detailed maps will be added in a later stage.' : '';
