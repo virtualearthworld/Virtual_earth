@@ -177,6 +177,7 @@ placeSearch.addEventListener('input', () => {
     info.textContent = item.kind + ' · ' + item.country + ' · ' + item.continent;
     button.append(heading, info);
     button.addEventListener('click', () => {
+      if (item.kind === 'City' && item.label === 'Niagara Falls') { window.location.href = 'niagara-falls.html'; return; }
       selected = {name:item.label, continent:item.continent, country:item.country, city:item.kind === 'City' ? item.label : null};
       currentLevel = item.kind === 'City' ? 'city' : 'cityList';
       breadcrumb.textContent = item.kind === 'City' ? 'Earth › ' + item.continent + ' › ' + item.country + ' › ' + item.label : 'Earth › ' + item.continent + ' › ' + item.country;
