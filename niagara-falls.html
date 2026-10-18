@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Niagara Falls Explorer | Virtual Earth</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#102139;--text:#eef5ff;--muted:#afc0d5;--accent:#69d7b0;--line:#2b4059}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#173251,#08111f 60%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:18px max(18px,calc((100vw - 1100px)/2));border-bottom:1px solid #ffffff20;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap}.brand{font-weight:800}.brand span,a{color:var(--accent)}.back{border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-decoration:none;background:#13253a}
+main{max-width:1100px;margin:auto;padding:28px 18px 50px}.eyebrow{color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-size:.75rem;font-weight:700}h1{font-size:clamp(2rem,5vw,3.5rem);margin:8px 0}p{color:var(--muted);line-height:1.6}.layout{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:22px}.panel{border:1px solid var(--line);border-radius:16px;background:#0e1d30;overflow:hidden}#map{height:520px;width:100%;background:#dbe7ed}.mapnote{padding:10px 14px;margin:0;font-size:.8rem}.side{padding:18px}.side h2{margin-top:0}.places{display:grid;gap:9px}.place{width:100%;text-align:left;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);cursor:pointer;font:inherit}.place:hover,.place:focus{border-color:var(--accent)}.place strong{display:block}.place small{color:var(--muted)}.info{margin-top:16px;padding:14px;border-radius:12px;background:#152b42}.info p{margin-bottom:0}.featuregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.feature{padding:16px;border:1px solid var(--line);border-radius:14px;background:#102139}.feature h3{margin:6px 0}.feature p{font-size:.9rem;margin:0}.status{color:var(--accent);min-height:1.5em;font-size:.9rem}@media(max-width:760px){.layout{grid-template-columns:1fr}#map{height:400px}.featuregrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand">🌐 Virtual <span>Earth</span> · Niagara Falls Explorer</div><a class="back" href="./">← Back to Virtual Earth</a></header>
+<main>
+<div class="eyebrow">Ontario · First detailed area</div>
+<h1>Explore Niagara Falls</h1>
+<p>This is the first Niagara Falls map layer for Virtual Earth. Choose a landmark or district to jump there on the real street map. This is our starting foundation; detailed building models, property boundaries, ownership, and virtual businesses will be added in later stages.</p>
+<div class="layout">
+<div class="panel"><div id="map" aria-label="Interactive Niagara Falls street map"></div><p class="mapnote">Map data © OpenStreetMap contributors. Drag to move and use +/− to zoom.</p></div>
+<aside class="panel side"><h2>Explore places</h2><p>Select a landmark or area.</p><div class="places" id="places"></div><div class="info"><strong id="placeTitle">Niagara Falls, Ontario</strong><p id="placeInfo">Choose a place to explore the city map.</p></div><p class="status" id="status" aria-live="polite"></p></aside>
+</div>
+<div class="featuregrid">
+<div class="feature"><div>🗺️</div><h3>Stage 1: Streets</h3><p>Navigate real streets and zoom in to explore the area.</p></div>
+<div class="feature"><div>🏞️</div><h3>Stage 2: Places</h3><p>Build up landmarks and districts as selectable locations.</p></div>
+<div class="feature"><div>🏘️</div><h3>Stage 3: Buildings</h3><p>Next, we can plan building-level exploration and virtual properties. Those features are not active yet.</p></div>
+</div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const places=[
+{name:"Horseshoe Falls / Table Rock",lat:43.0799,lon:-79.0747,zoom:16,desc:"The Canadian viewing area beside Horseshoe Falls and Table Rock Centre."},
+{name:"Clifton Hill",lat:43.0898,lon:-79.0818,zoom:16,desc:"The busy entertainment and visitor district north of the falls."},
+{name:"Niagara Parkway",lat:43.1030,lon:-79.0675,zoom:14,desc:"A scenic route along the Niagara River, with parks and viewpoints."},
+{name:"Queen Victoria Park",lat:43.0834,lon:-79.0780,zoom:16,desc:"Parkland and visitor paths near the falls and the Niagara Parkway."},
+{name:"Downtown Niagara Falls",lat:43.1000,lon:-79.0730,zoom:15,desc:"The downtown street grid with local shops, services, and civic areas."},
+{name:"Lundy's Lane",lat:43.0955,lon:-79.1150,zoom:14,desc:"A major commercial corridor west of the tourist district."},
+{name:"Chippawa",lat:43.0530,lon:-79.0500,zoom:14,desc:"A community in the southern part of Niagara Falls near the Niagara River."},
+{name:"Whirlpool / Niagara Gorge",lat:43.1160,lon:-79.0620,zoom:15,desc:"The Niagara River gorge and whirlpool area north of the central tourist district."},
+{name:"Niagara Falls GO / Bus Terminal area",lat:43.1080,lon:-79.0630,zoom:15,desc:"The transit area near downtown; confirm exact service locations with current transit information."}
+];
+const map=L.map('map').setView([43.0896,-79.0849],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';markerLayer.clearLayers();L.marker([item.lat,item.lon]).addTo(markerLayer).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc).openPopup()}
+const list=document.getElementById('places');
+places.forEach(item=>{const b=document.createElement('button');b.className='place';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
+L.marker([43.0896,-79.0849]).addTo(map).bindPopup('Niagara Falls, Ontario — start exploring').openPopup();
+</script>
+</body>
+</html>
