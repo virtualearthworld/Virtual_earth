@@ -55,27 +55,59 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,att
 const markerLayer=L.layerGroup().addTo(map);
 const allMarkers=L.layerGroup().addTo(map);
 const markerByName=new Map();
-function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';const photoBox=document.getElementById("placePhoto");photoBox.replaceChildren();if(item.name==="Skylon Tower"){
-const galleryTitle=document.createElement("p");galleryTitle.className="galleryTitle";galleryTitle.textContent="Views from Skylon Tower — click a photo to enlarge";photoBox.append(galleryTitle);
-const photos=[
-{title:"Skylon Tower",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Skylon_Tower_%28Niagara_Falls%29_in_October_2024.jpg/960px-Skylon_Tower_%28Niagara_Falls%29_in_October_2024.jpg",credit:"TheWxResearcher · CC0"},
-{title:"Horseshoe Falls from Skylon Tower",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Niagara_Falls_seen_from_Skylon_tower.jpg/960px-Niagara_Falls_seen_from_Skylon_tower.jpg",credit:"Tenryuu1919 · CC0"},
-{title:"Wide Niagara Falls panorama",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/NiagaraFallsSkylon.jpg/960px-NiagaraFallsSkylon.jpg",credit:"Cimosteve · CC0"},
-{title:"Falls and surrounding city",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Niagara_Falls_from_Skylon.jpg/960px-Niagara_Falls_from_Skylon.jpg",credit:"Contact.ankur · see source licence"}
-];
-const galleryGrid=document.createElement("div");galleryGrid.className="photoGallery";
-photos.forEach(entry=>{
-const card=document.createElement("button");card.type="button";card.className="photoCard";card.setAttribute("aria-label","Enlarge photo: "+entry.title);
-const img=document.createElement("img");img.loading="lazy";img.alt=entry.title;img.src=entry.url;
-img.onerror=()=>{card.classList.add("photoUnavailable");img.remove();const msg=document.createElement("span");msg.textContent="Image failed to load";card.prepend(msg)};
-const caption=document.createElement("span");caption.className="photoCaption";caption.textContent=entry.title;
-const credit=document.createElement("span");credit.className="photoCredit";credit.textContent=entry.credit;
+async function loadPhotoGallery(item,photoBox){
+const heading=document.createElement("p");heading.className="galleryTitle";heading.textContent="Photos of "+item.name+" — click any photo to enlarge";photoBox.append(heading);
+const grid=document.createElement("div");grid.className="photoGallery";photoBox.append(grid);
+const status=document.createElement("p");status.className="photoLoading";status.textContent="Loading photos…";photoBox.append(status);
+const terms={
+"Horseshoe Falls / Table Rock":"Horseshoe Falls Niagara Falls Table Rock",
+"Clifton Hill":"Clifton Hill Niagara Falls Ontario",
+"Niagara Parkway":"Niagara Parkway Niagara Falls",
+"Queen Victoria Park":"Queen Victoria Park Niagara Falls Ontario",
+"Downtown Niagara Falls":"downtown Niagara Falls Ontario",
+"Lundy's Lane":"Lundy's Lane Niagara Falls Ontario",
+"Chippawa":"Chippawa Niagara Falls Ontario",
+"Whirlpool / Niagara Gorge":"Niagara Whirlpool Niagara Gorge Ontario",
+"Niagara Falls GO / Bus Terminal area":"Niagara Falls Ontario bus terminal railway station",
+"Journey Behind the Falls":"Journey Behind the Falls Niagara Falls Ontario",
+"Rainbow Bridge":"Rainbow Bridge Niagara Falls Ontario",
+"Bird Kingdom":"Bird Kingdom Niagara Falls Ontario",
+"Fallsview Casino":"Fallsview Casino Niagara Falls Ontario",
+"Dufferin Islands":"Dufferin Islands Niagara Falls Ontario",
+"Niagara Parks Floral Showhouse":"Niagara Parks Floral Showhouse Niagara Falls",
+"White Water Walk":"White Water Walk Niagara Falls Ontario",
+"Niagara SkyWheel":"Niagara SkyWheel Clifton Hill Niagara Falls"
+};
+try{
+const query=terms[item.name]||item.name+" Niagara Falls Ontario";
+const api="https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch="+encodeURIComponent(query+" filetype:bitmap")+"&gsrnamespace=6&gsrlimit=12&gsrwhat=text&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=960&format=json&origin=*";
+let response=await fetch(api);if(!response.ok)throw new Error("Photo search unavailable");
+let data=await response.json();let pages=Object.values(data.query?.pages||{}).filter(p=>p.imageinfo?.[0]?.thumburl);
+if(!pages.length && item.name!=="Skylon Tower"){
+const fallback="Niagara Falls Ontario waterfall landscape";
+response=await fetch("https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch="+encodeURIComponent(fallback+" filetype:bitmap")+"&gsrnamespace=6&gsrlimit=8&gsrwhat=text&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=960&format=json&origin=*");
+if(!response.ok)throw new Error("Photo search unavailable");data=await response.json();pages=Object.values(data.query?.pages||{}).filter(p=>p.imageinfo?.[0]?.thumburl);
+}
+status.remove();
+if(!pages.length){status.textContent="No photos were found for this location yet.";photoBox.append(status);return}
+pages.slice(0,4).forEach(page=>{
+const info=page.imageinfo[0],meta=info.extmetadata||{};
+const clean=v=>(v?.value||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
+const title=page.title.replace(/^File:/,"").replace(/\.[^.]+$/,"").replace(/_/g," ");
+const artist=clean(meta.Artist)||"Wikimedia Commons contributor";
+const license=clean(meta.LicenseShortName)||"See Wikimedia Commons licence";
+const card=document.createElement("button");card.type="button";card.className="photoCard";card.setAttribute("aria-label","Enlarge photo: "+title);
+const img=document.createElement("img");img.loading="lazy";img.alt=title;img.src=info.thumburl;
+img.onerror=()=>{card.remove();if(!grid.children.length){status.textContent="Some photos could not be loaded. Please try again.";photoBox.append(status)}};
+const caption=document.createElement("span");caption.className="photoCaption";caption.textContent=title;
+const credit=document.createElement("span");credit.className="photoCredit";credit.textContent=artist+" · "+license;
 card.append(img,caption,credit);
-card.addEventListener("click",()=>{if(!img.isConnected || !img.src) return;let modal=document.getElementById("photoLightbox");if(!modal){modal=document.createElement("div");modal.id="photoLightbox";modal.className="photoLightbox";modal.innerHTML='<button class="lightboxClose" aria-label="Close photo">×</button><img alt=""><div class="lightboxCaption"></div>';document.body.append(modal);modal.querySelector(".lightboxClose").addEventListener("click",()=>modal.classList.remove("open"));modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("open")});document.addEventListener("keydown",e=>{if(e.key==="Escape")modal.classList.remove("open")})}const large=modal.querySelector("img");large.src=img.src;large.alt=entry.title;modal.querySelector(".lightboxCaption").textContent=entry.title+" — "+entry.credit;modal.classList.add("open")});
-galleryGrid.append(card);
+card.addEventListener("click",()=>{let modal=document.getElementById("photoLightbox");if(!modal){modal=document.createElement("div");modal.id="photoLightbox";modal.className="photoLightbox";modal.innerHTML='<button class="lightboxClose" aria-label="Close photo">×</button><img alt=""><div class="lightboxCaption"></div>';document.body.append(modal);modal.querySelector(".lightboxClose").addEventListener("click",()=>modal.classList.remove("open"));modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("open")});document.addEventListener("keydown",e=>{if(e.key==="Escape")modal.classList.remove("open")})}const large=modal.querySelector("img");large.src=info.thumburl;large.alt=title;modal.querySelector(".lightboxCaption").textContent=title+" — "+artist+" · "+license;modal.classList.add("open")});
+grid.append(card);
 });
-photoBox.append(galleryGrid);
-}const details=document.getElementById('placeDetails');details.replaceChildren();const explore=document.createElement('button');explore.className='place';explore.textContent='Explore Detailed Map';explore.addEventListener('click',()=>{map.flyTo([item.lat,item.lon],Math.min(19,item.zoom+2),{duration:1});markerByName.get(item.name)?.openPopup();document.getElementById('status').textContent='Zooming in on '+item.name+'; opening its details below.';setTimeout(()=>{const info=document.querySelector('.info');info.scrollIntoView({behavior:'smooth',block:'center'});if(item.name==='Skylon Tower'){document.getElementById('placePhoto').scrollIntoView({behavior:'smooth',block:'center'});}},1100);});const view=document.createElement('button');view.className='place';view.textContent='View Location';view.addEventListener('click',()=>{map.flyTo([item.lat,item.lon],item.zoom,{duration:1});markerByName.get(item.name)?.openPopup();document.getElementById('placeTitle').scrollIntoView({behavior:'smooth',block:'nearest'});});details.append(explore,view);markerLayer.clearLayers();const selectedMarker=markerByName.get(item.name);if(selectedMarker)selectedMarker.openPopup()}
+}catch(error){status.textContent="Photos could not be loaded right now. Please try again in a moment."}
+}
+function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';const photoBox=document.getElementById("placePhoto");photoBox.replaceChildren();loadPhotoGallery(item,photoBox);const details=document.getElementById('placeDetails');details.replaceChildren();const explore=document.createElement('button');explore.className='place';explore.textContent='Explore Detailed Map';explore.addEventListener('click',()=>{map.flyTo([item.lat,item.lon],Math.min(19,item.zoom+2),{duration:1});markerByName.get(item.name)?.openPopup();document.getElementById('status').textContent='Zooming in on '+item.name+'; opening its details below.';setTimeout(()=>{const info=document.querySelector('.info');info.scrollIntoView({behavior:'smooth',block:'center'});if(item.name==='Skylon Tower'){document.getElementById('placePhoto').scrollIntoView({behavior:'smooth',block:'center'});}},1100);});const view=document.createElement('button');view.className='place';view.textContent='View Location';view.addEventListener('click',()=>{map.flyTo([item.lat,item.lon],item.zoom,{duration:1});markerByName.get(item.name)?.openPopup();document.getElementById('placeTitle').scrollIntoView({behavior:'smooth',block:'nearest'});});details.append(explore,view);markerLayer.clearLayers();const selectedMarker=markerByName.get(item.name);if(selectedMarker)selectedMarker.openPopup()}
 const list=document.getElementById('places');
 places.forEach(item=>{const pin=L.marker([item.lat,item.lon]).addTo(allMarkers).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc);pin.on('click',()=>choose(item));markerByName.set(item.name,pin);const b=document.createElement('button');b.className='place';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
 choose(places[0]);
