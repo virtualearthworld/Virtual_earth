@@ -224,58 +224,29 @@ placeSearch.addEventListener('input', () => {
 });
 showSaved();
 
-const journeyData = {
-  "Africa": {
-    "Nigeria":{"Lagos":["Lagos"],"Federal Capital Territory":["Abuja"],"Kano State":["Kano"]},
-    "Egypt":{"Cairo Governorate":["Cairo","Giza"],"Alexandria Governorate":["Alexandria"]},
-    "South Africa":{"Western Cape":["Cape Town"],"Gauteng":["Johannesburg"],"KwaZulu-Natal":["Durban"]},
-    "Kenya":{"Nairobi County":["Nairobi"],"Mombasa County":["Mombasa"]}
-  },
-  "Asia": {
-    "India":{"Delhi":["New Delhi"],"Maharashtra":["Mumbai","Pune"],"Punjab":["Amritsar","Ludhiana","Chandigarh"],"Karnataka":["Bengaluru"],"Tamil Nadu":["Chennai"],"West Bengal":["Kolkata"]},
-    "Japan":{"Tokyo Metropolis":["Tokyo"],"Osaka Prefecture":["Osaka"],"Kyoto Prefecture":["Kyoto"],"Hokkaido":["Sapporo"]},
-    "China":{"Beijing Municipality":["Beijing"],"Shanghai Municipality":["Shanghai"],"Guangdong":["Shenzhen","Guangzhou"],"Sichuan":["Chengdu"]},
-    "United Arab Emirates":{"Dubai Emirate":["Dubai"],"Abu Dhabi Emirate":["Abu Dhabi"]},
-    "South Korea":{"Seoul":["Seoul"],"Busan":["Busan"]}
-  },
-  "Europe": {
-    "United Kingdom":{"England":["London","Manchester","Birmingham"],"Scotland":["Edinburgh","Glasgow"],"Wales":["Cardiff"],"Northern Ireland":["Belfast"]},
-    "France":{"Île-de-France":["Paris"],"Auvergne-Rhône-Alpes":["Lyon"],"Provence-Alpes-Côte d’Azur":["Marseille","Nice"]},
-    "Germany":{"Berlin":["Berlin"],"Bavaria":["Munich"],"Hamburg":["Hamburg"],"Hesse":["Frankfurt"]},
-    "Italy":{"Lazio":["Rome"],"Lombardy":["Milan"],"Veneto":["Venice"]},
-    "Spain":{"Community of Madrid":["Madrid"],"Catalonia":["Barcelona"],"Andalusia":["Seville"]}
-  },
-  "North America": {
-    "Canada":{"Ontario":["Toronto","Brampton","Niagara Falls","Ottawa","Hamilton","Mississauga"],"Quebec":["Montreal","Quebec City"],"British Columbia":["Vancouver","Victoria"],"Alberta":["Calgary","Edmonton"],"Manitoba":["Winnipeg"],"Nova Scotia":["Halifax"]},
-    "United States":{"California":["Los Angeles","San Francisco","San Diego"],"New York":["New York City","Buffalo"],"Florida":["Miami","Orlando"],"Texas":["Houston","Dallas","Austin"],"Illinois":["Chicago"],"Washington":["Seattle"]},
-    "Mexico":{"Mexico City":["Mexico City"],"Jalisco":["Guadalajara"],"Nuevo León":["Monterrey"],"Quintana Roo":["Cancún"]}
-  },
-  "South America": {
-    "Brazil":{"São Paulo":["São Paulo"],"Rio de Janeiro":["Rio de Janeiro"],"Federal District":["Brasília"]},
-    "Argentina":{"Buenos Aires":["Buenos Aires"],"Córdoba":["Córdoba"]},
-    "Colombia":{"Bogotá D.C.":["Bogotá"],"Antioquia":["Medellín"]},
-    "Peru":{"Lima Province":["Lima"],"Cusco Region":["Cusco"]}
-  },
-  "Oceania": {
-    "Australia":{"New South Wales":["Sydney"],"Victoria":["Melbourne"],"Queensland":["Brisbane"],"Western Australia":["Perth"]},
-    "New Zealand":{"Auckland Region":["Auckland"],"Wellington Region":["Wellington"],"Canterbury":["Christchurch"]},
-    "Fiji":{"Central Division":["Suva"],"Western Division":["Nadi"]}
-  }
-};
 const continentSelect=document.getElementById('continentSelect');
 const countrySelect=document.getElementById('countrySelect');
 const regionSelect=document.getElementById('regionSelect');
 const citySelect=document.getElementById('citySelect');
 const journeyStatus=document.getElementById('journeyStatus');
 const openDestination=document.getElementById('openDestination');
+const continentNames=['Africa','Antarctica','Asia','Europe','North America','Oceania','South America'];
+let worldCountries=[];
+let regionCache={};
+let cityCache={};
 function fillSelect(select,placeholder,items){select.innerHTML='';const first=document.createElement('option');first.value='';first.textContent=placeholder;select.appendChild(first);items.forEach(value=>{const o=document.createElement('option');o.value=value;o.textContent=value;select.appendChild(o)});select.disabled=items.length===0}
 function resetAfter(level){if(level<=1)fillSelect(countrySelect,'Choose a country',[]);if(level<=2)fillSelect(regionSelect,'Choose a province / state / region',[]);if(level<=3)fillSelect(citySelect,'Choose a city / destination',[]);openDestination.disabled=true}
-fillSelect(continentSelect,'Choose a continent',Object.keys(journeyData));
-continentSelect.addEventListener('change',()=>{resetAfter(1);fillSelect(countrySelect,'Choose a country',Object.keys(journeyData[continentSelect.value]||{}));journeyStatus.textContent=continentSelect.value?'Now choose a country in '+continentSelect.value+'.':'Start by choosing a continent.'});
-countrySelect.addEventListener('change',()=>{resetAfter(2);const regions=journeyData[continentSelect.value]?.[countrySelect.value]||{};fillSelect(regionSelect,'Choose a province / state / region',Object.keys(regions));journeyStatus.textContent=countrySelect.value?'Now choose a province, state, or region in '+countrySelect.value+'.':''});
-regionSelect.addEventListener('change',()=>{resetAfter(3);const cities=journeyData[continentSelect.value]?.[countrySelect.value]?.[regionSelect.value]||[];fillSelect(citySelect,'Choose a city / destination',cities);journeyStatus.textContent=regionSelect.value?'Now choose a city or destination in '+regionSelect.value+'.':''});
+fillSelect(continentSelect,'Choose a continent',continentNames);
+function normalizedCountryName(name){const aliases={'United States of America':'United States','Russian Federation':'Russia','Türkiye':'Turkey','Republic of Korea':'South Korea','Korea, Republic of':'South Korea','Viet Nam':'Vietnam','Czechia':'Czech Republic','Côte d’Ivoire':'Ivory Coast','Côte d\'Ivoire':'Ivory Coast','Congo':'Republic of the Congo','Democratic Republic of the Congo':'Democratic Republic of the Congo'};return aliases[name]||name}
+async function postLocation(path,payload){const response=await fetch('https://countriesnow.space/api/v0.1/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!response.ok)throw new Error('Location service returned '+response.status);const json=await response.json();if(json.error)throw new Error(json.msg||'Location data unavailable');return json.data}
+async function loadWorldCountries(){journeyStatus.textContent='Loading worldwide country data…';try{const response=await fetch('https://restcountries.com/v3.1/all?fields=name,continents');if(!response.ok)throw new Error('Country service unavailable');const data=await response.json();worldCountries=data.map(c=>({name:c.name?.common,continents:c.continents||[]})).filter(c=>c.name&&c.continents.length);continentSelect.disabled=false;journeyStatus.textContent='Worldwide country data loaded. Choose a continent to begin.'}catch(error){journeyStatus.textContent='Could not load worldwide country data. Please refresh and try again.';continentSelect.disabled=true}}
+continentSelect.addEventListener('change',()=>{resetAfter(1);const countries=worldCountries.filter(c=>c.continents.includes(continentSelect.value)).map(c=>c.name).sort((a,b)=>a.localeCompare(b));fillSelect(countrySelect,'Choose a country',countries);journeyStatus.textContent=countries.length?'Choose a country in '+continentSelect.value+'.':'No country list available for this continent.'});
+countrySelect.addEventListener('change',async()=>{resetAfter(2);if(!countrySelect.value)return;const country=countrySelect.value;journeyStatus.textContent='Loading provinces, states, and regions for '+country+'…';try{let regions=regionCache[country];if(!regions){const data=await postLocation('countries/states',{country:normalizedCountryName(country)});regions=(data.states||[]).map(s=>typeof s==='string'?s:s.name).filter(Boolean).sort((a,b)=>a.localeCompare(b));regionCache[country]=regions}if(regions.length){fillSelect(regionSelect,'Choose a province / state / region',regions);journeyStatus.textContent='Choose a province, state, or region in '+country+'.'}else{fillSelect(regionSelect,'Choose an area', ['All cities in '+country]);journeyStatus.textContent='No state list was provided; choose “All cities” to browse available cities.'}}catch(error){fillSelect(regionSelect,'Choose an area',['All cities in '+country]);journeyStatus.textContent='Regional data was unavailable for this country. Choose “All cities” to try its city list.'}});
+regionSelect.addEventListener('change',async()=>{fillSelect(citySelect,'Choose a city / destination',[]);openDestination.disabled=true;if(!regionSelect.value)return;const country=countrySelect.value;const region=regionSelect.value;journeyStatus.textContent='Loading cities…';try{let cities;if(region.startsWith('All cities in ')){if(!cityCache[country]){const data=await postLocation('countries/cities',{country:normalizedCountryName(country)});cityCache[country]=Array.isArray(data)?data:[]}cities=cityCache[country]}else{const key=country+'|'+region;if(!cityCache[key]){const data=await postLocation('countries/state/cities',{country:normalizedCountryName(country),state:region});cityCache[key]=Array.isArray(data)?data:[]}cities=cityCache[key]}cities=[...new Set(cities.map(c=>typeof c==='string'?c:c.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));fillSelect(citySelect,'Choose a city / destination',cities);journeyStatus.textContent=cities.length?'Loaded '+cities.length.toLocaleString()+' city options. Choose your destination.':'No cities were returned for this area. Try the worldwide search below.'}catch(error){journeyStatus.textContent='Could not load city data for this area. Try the worldwide search below.'}});
 citySelect.addEventListener('change',()=>{openDestination.disabled=!citySelect.value;journeyStatus.textContent=citySelect.value?'Selected path: '+continentSelect.value+' › '+countrySelect.value+' › '+regionSelect.value+' › '+citySelect.value+'.':''});
-openDestination.addEventListener('click',()=>{if(!citySelect.value)return;if(citySelect.value==='Niagara Falls'){window.location.href='niagara-falls.html';return}window.location.href='place-explorer.html?q='+encodeURIComponent(citySelect.value+', '+regionSelect.value+', '+countrySelect.value)});
+openDestination.addEventListener('click',()=>{if(!citySelect.value)return;const city=citySelect.value;if(city.toLowerCase()==='niagara falls'){window.location.href='niagara-falls.html';return}window.location.href='place-explorer.html?q='+encodeURIComponent(city+', '+regionSelect.value+', '+countrySelect.value)});
+document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Choose a continent to begin.'});
+loadWorldCountries();
 document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Start by choosing a continent.'});
 
 </script>
