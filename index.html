@@ -35,6 +35,27 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <div><div class="eyebrow">The beginning of a virtual world</div><h1>Explore Earth.<br><span style="color:var(--accent)">Imagine what’s next.</span></h1><p>Start with the continents and places of our real world. This early foundation will grow step by step into a richer virtual experience.</p></div>
 <div class="earth" aria-label="Earth globe with satellite imagery texture"><div class="globe"></div></div>
 </div>
+
+<section id="destinationJourney" style="margin-top:34px">
+  <div class="section-head"><div><div class="eyebrow">Step-by-step discovery</div><h2>Find your destination</h2><p style="margin:0">Choose a continent, country, region, and city. Each step narrows your choices.</p></div></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+    <label style="display:grid;gap:8px;color:var(--muted);font-size:.9rem">1. Continent
+      <select id="continentSelect" class="search" style="width:100%"><option value="">Choose a continent</option></select>
+    </label>
+    <label style="display:grid;gap:8px;color:var(--muted);font-size:.9rem">2. Country
+      <select id="countrySelect" class="search" style="width:100%" disabled><option value="">Choose a country</option></select>
+    </label>
+    <label style="display:grid;gap:8px;color:var(--muted);font-size:.9rem">3. Province / state / region
+      <select id="regionSelect" class="search" style="width:100%" disabled><option value="">Choose a region</option></select>
+    </label>
+    <label style="display:grid;gap:8px;color:var(--muted);font-size:.9rem">4. City / destination
+      <select id="citySelect" class="search" style="width:100%" disabled><option value="">Choose a city</option></select>
+    </label>
+  </div>
+  <div class="actions"><button class="action" id="openDestination" type="button" disabled>Explore selected destination</button><button class="action secondary" id="resetDestination" type="button">Start over</button></div>
+  <p id="journeyStatus" style="margin:10px 0 0;font-size:.9rem">Start by choosing a continent.</p>
+</section>
+
 <section>
 <div class="section-head"><div><h2>Choose a region</h2><p style="margin:0">Select a continent to begin exploring.</p></div><input id="search" class="search" type="search" placeholder="Search continents…" aria-label="Search continents"></div>
 <div id="regions" class="grid">
@@ -202,6 +223,61 @@ placeSearch.addEventListener('input', () => {
   }
 });
 showSaved();
+
+const journeyData = {
+  "Africa": {
+    "Nigeria":{"Lagos":["Lagos"],"Federal Capital Territory":["Abuja"],"Kano State":["Kano"]},
+    "Egypt":{"Cairo Governorate":["Cairo","Giza"],"Alexandria Governorate":["Alexandria"]},
+    "South Africa":{"Western Cape":["Cape Town"],"Gauteng":["Johannesburg"],"KwaZulu-Natal":["Durban"]},
+    "Kenya":{"Nairobi County":["Nairobi"],"Mombasa County":["Mombasa"]}
+  },
+  "Asia": {
+    "India":{"Delhi":["New Delhi"],"Maharashtra":["Mumbai","Pune"],"Punjab":["Amritsar","Ludhiana","Chandigarh"],"Karnataka":["Bengaluru"],"Tamil Nadu":["Chennai"],"West Bengal":["Kolkata"]},
+    "Japan":{"Tokyo Metropolis":["Tokyo"],"Osaka Prefecture":["Osaka"],"Kyoto Prefecture":["Kyoto"],"Hokkaido":["Sapporo"]},
+    "China":{"Beijing Municipality":["Beijing"],"Shanghai Municipality":["Shanghai"],"Guangdong":["Shenzhen","Guangzhou"],"Sichuan":["Chengdu"]},
+    "United Arab Emirates":{"Dubai Emirate":["Dubai"],"Abu Dhabi Emirate":["Abu Dhabi"]},
+    "South Korea":{"Seoul":["Seoul"],"Busan":["Busan"]}
+  },
+  "Europe": {
+    "United Kingdom":{"England":["London","Manchester","Birmingham"],"Scotland":["Edinburgh","Glasgow"],"Wales":["Cardiff"],"Northern Ireland":["Belfast"]},
+    "France":{"Île-de-France":["Paris"],"Auvergne-Rhône-Alpes":["Lyon"],"Provence-Alpes-Côte d’Azur":["Marseille","Nice"]},
+    "Germany":{"Berlin":["Berlin"],"Bavaria":["Munich"],"Hamburg":["Hamburg"],"Hesse":["Frankfurt"]},
+    "Italy":{"Lazio":["Rome"],"Lombardy":["Milan"],"Veneto":["Venice"]},
+    "Spain":{"Community of Madrid":["Madrid"],"Catalonia":["Barcelona"],"Andalusia":["Seville"]}
+  },
+  "North America": {
+    "Canada":{"Ontario":["Toronto","Brampton","Niagara Falls","Ottawa","Hamilton","Mississauga"],"Quebec":["Montreal","Quebec City"],"British Columbia":["Vancouver","Victoria"],"Alberta":["Calgary","Edmonton"],"Manitoba":["Winnipeg"],"Nova Scotia":["Halifax"]},
+    "United States":{"California":["Los Angeles","San Francisco","San Diego"],"New York":["New York City","Buffalo"],"Florida":["Miami","Orlando"],"Texas":["Houston","Dallas","Austin"],"Illinois":["Chicago"],"Washington":["Seattle"]},
+    "Mexico":{"Mexico City":["Mexico City"],"Jalisco":["Guadalajara"],"Nuevo León":["Monterrey"],"Quintana Roo":["Cancún"]}
+  },
+  "South America": {
+    "Brazil":{"São Paulo":["São Paulo"],"Rio de Janeiro":["Rio de Janeiro"],"Federal District":["Brasília"]},
+    "Argentina":{"Buenos Aires":["Buenos Aires"],"Córdoba":["Córdoba"]},
+    "Colombia":{"Bogotá D.C.":["Bogotá"],"Antioquia":["Medellín"]},
+    "Peru":{"Lima Province":["Lima"],"Cusco Region":["Cusco"]}
+  },
+  "Oceania": {
+    "Australia":{"New South Wales":["Sydney"],"Victoria":["Melbourne"],"Queensland":["Brisbane"],"Western Australia":["Perth"]},
+    "New Zealand":{"Auckland Region":["Auckland"],"Wellington Region":["Wellington"],"Canterbury":["Christchurch"]},
+    "Fiji":{"Central Division":["Suva"],"Western Division":["Nadi"]}
+  }
+};
+const continentSelect=document.getElementById('continentSelect');
+const countrySelect=document.getElementById('countrySelect');
+const regionSelect=document.getElementById('regionSelect');
+const citySelect=document.getElementById('citySelect');
+const journeyStatus=document.getElementById('journeyStatus');
+const openDestination=document.getElementById('openDestination');
+function fillSelect(select,placeholder,items){select.innerHTML='';const first=document.createElement('option');first.value='';first.textContent=placeholder;select.appendChild(first);items.forEach(value=>{const o=document.createElement('option');o.value=value;o.textContent=value;select.appendChild(o)});select.disabled=items.length===0}
+function resetAfter(level){if(level<=1)fillSelect(countrySelect,'Choose a country',[]);if(level<=2)fillSelect(regionSelect,'Choose a province / state / region',[]);if(level<=3)fillSelect(citySelect,'Choose a city / destination',[]);openDestination.disabled=true}
+fillSelect(continentSelect,'Choose a continent',Object.keys(journeyData));
+continentSelect.addEventListener('change',()=>{resetAfter(1);fillSelect(countrySelect,'Choose a country',Object.keys(journeyData[continentSelect.value]||{}));journeyStatus.textContent=continentSelect.value?'Now choose a country in '+continentSelect.value+'.':'Start by choosing a continent.'});
+countrySelect.addEventListener('change',()=>{resetAfter(2);const regions=journeyData[continentSelect.value]?.[countrySelect.value]||{};fillSelect(regionSelect,'Choose a province / state / region',Object.keys(regions));journeyStatus.textContent=countrySelect.value?'Now choose a province, state, or region in '+countrySelect.value+'.':''});
+regionSelect.addEventListener('change',()=>{resetAfter(3);const cities=journeyData[continentSelect.value]?.[countrySelect.value]?.[regionSelect.value]||[];fillSelect(citySelect,'Choose a city / destination',cities);journeyStatus.textContent=regionSelect.value?'Now choose a city or destination in '+regionSelect.value+'.':''});
+citySelect.addEventListener('change',()=>{openDestination.disabled=!citySelect.value;journeyStatus.textContent=citySelect.value?'Selected path: '+continentSelect.value+' › '+countrySelect.value+' › '+regionSelect.value+' › '+citySelect.value+'.':''});
+openDestination.addEventListener('click',()=>{if(citySelect.value)window.location.href='place-explorer.html?q='+encodeURIComponent(citySelect.value+', '+regionSelect.value+', '+countrySelect.value)});
+document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Start by choosing a continent.'});
+
 </script>
 </body>
 </html>
