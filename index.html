@@ -44,6 +44,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <button class="card" data-name="South America" data-desc="Explore countries, landscapes, and cities in South America."><span class="emoji">🌿</span><h3>South America</h3><p>Landscapes, cities, and cultures.</p></button>
 <button class="card" data-name="Oceania" data-desc="Explore Australia, New Zealand, and Pacific island destinations."><span class="emoji">🏝️</span><h3>Oceania</h3><p>Australia and Pacific island destinations.</p></button>
 </div>
+<div style="margin-top:18px"><input id="placeSearch" class="search" style="width:100%;max-width:none" type="search" placeholder="Search countries and cities, e.g. India or Tokyo" aria-label="Search countries and cities"><div id="placeResults" class="grid" style="margin-top:12px"></div></div>
 <div id="detail" class="detail" aria-live="polite"><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore countries</button><button class="action secondary" id="saveBtn">Save destination</button></div><div id="places" class="grid" style="margin-top:18px"></div><div id="savedPanel" style="margin-top:18px"></div><p id="status" style="margin-bottom:0"></p></div>
 </section>
 <p class="note">Foundation preview: choose a continent, explore sample countries and cities, and save places in this browser. The globe uses NASA Blue Marble satellite-based imagery; accurate interactive maps are a later stage. Accurate interactive maps, accounts, the virtual economy, and multiplayer features are later stages.</p>
@@ -68,6 +69,51 @@ cards.forEach(card=>card.addEventListener('click',()=>{selected={name:card.datas
 document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();cards.forEach(c=>c.hidden=!c.dataset.name.toLowerCase().includes(q))});
 exploreBtn.addEventListener('click',()=>{if(!selected)return;if(currentLevel==='city'){currentLevel='country';selected={name:selected.continent,continent:selected.continent,desc:destinationData[selected.continent]?'Choose a country.':''};title.textContent=selected.continent;desc.textContent='Choose a country to explore sample cities.';renderOptions(Object.keys(destinationData[selected.continent]||{}),'country');exploreBtn.textContent='Explore countries';return}currentLevel='country';title.textContent=selected.continent;desc.textContent='Choose a country to explore sample cities.';renderOptions(Object.keys(destinationData[selected.continent]||{}),'country');exploreBtn.textContent='Explore countries';status.textContent='Sample locations for this early build.'});
 saveBtn.addEventListener('click',()=>{if(!selected)return;const place=selected.city?selected.city+', '+selected.country:(selected.country||selected.name);let saved=[];try{saved=JSON.parse(localStorage.getItem('virtualEarthSaved')||'[]')}catch{}if(!saved.includes(place))saved.push(place);localStorage.setItem('virtualEarthSaved',JSON.stringify(saved));status.textContent='Saved '+place+' in this browser.';showSaved()});
+
+// Search across the sample countries and cities.
+const placeSearch = document.getElementById('placeSearch');
+const placeResults = document.getElementById('placeResults');
+placeSearch.addEventListener('input', () => {
+  const q = placeSearch.value.trim().toLowerCase();
+  placeResults.innerHTML = '';
+  if (!q) return;
+  const matches = [];
+  Object.entries(destinationData).forEach(([continent, countries]) => {
+    Object.entries(countries).forEach(([country, cities]) => {
+      if (country.toLowerCase().includes(q)) matches.push({label:country, country, continent, kind:'Country'});
+      cities.forEach(city => {
+        if (city.toLowerCase().includes(q)) matches.push({label:city, country, continent, kind:'City'});
+      });
+    });
+  });
+  matches.slice(0, 12).forEach(item => {
+    const button = document.createElement('button');
+    button.className = 'card';
+    const heading = document.createElement('h3');
+    heading.textContent = item.label;
+    const info = document.createElement('p');
+    info.textContent = item.kind + ' · ' + item.country + ' · ' + item.continent;
+    button.append(heading, info);
+    button.addEventListener('click', () => {
+      selected = {name:item.label, continent:item.continent, country:item.country, city:item.kind === 'City' ? item.label : null};
+      currentLevel = item.kind === 'City' ? 'city' : 'country';
+      title.textContent = item.label;
+      desc.textContent = item.kind === 'City' ? 'Destination: ' + item.label + ', ' + item.country + '.' : 'Country selected. Choose a city from the list below.';
+      status.textContent = item.kind === 'City' ? 'You selected ' + item.label + '. This is a sample destination; detailed maps will be added in a later stage.' : '';
+      detail.classList.add('open');
+      renderOptions(item.kind === 'Country' ? (destinationData[item.continent][item.country] || []) : [], 'city');
+      exploreBtn.textContent = 'Back to countries';
+      showSaved();
+      detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+    placeResults.appendChild(button);
+  });
+  if (!matches.length) {
+    const empty = document.createElement('p');
+    empty.textContent = 'No matching sample country or city. Try another search.';
+    placeResults.appendChild(empty);
+  }
+});
 showSaved();
 </script>
 </body>
