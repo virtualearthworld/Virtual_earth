@@ -247,7 +247,6 @@ citySelect.addEventListener('change',()=>{openDestination.disabled=!citySelect.v
 openDestination.addEventListener('click',()=>{if(!citySelect.value)return;const city=citySelect.value;if(city.toLowerCase()==='niagara falls'){window.location.href='niagara-falls.html';return}window.location.href='place-explorer.html?q='+encodeURIComponent(city+', '+regionSelect.value+', '+countrySelect.value)});
 document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Choose a continent to begin.'});
 loadWorldCountries();
-document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Start by choosing a continent.'});
 
 </script>
 </body>
