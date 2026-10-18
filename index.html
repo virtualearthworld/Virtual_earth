@@ -17,7 +17,7 @@ p{color:var(--muted);line-height:1.65}.hero p{max-width:620px;font-size:1.06rem}
 .earth{min-height:300px;border:1px solid var(--line);border-radius:28px;background:radial-gradient(ellipse at 50% 100%,#1d5270 0,#0a1727 68%);display:grid;place-items:center;position:relative;overflow:hidden}
 .earth:before,.earth:after{content:"";position:absolute;border:1px solid #76d9f044;border-radius:50%;width:270px;height:270px;transform:rotate(-24deg) scaleX(.48);pointer-events:none}
 .earth:after{width:310px;height:310px;transform:rotate(35deg) scaleX(.52);border-color:#76d9f022}
-.globe{width:220px;height:220px;border-radius:50%;position:relative;z-index:1;background-color:#174b70;background-image:linear-gradient(90deg,#06162933,#ffffff08 45%,#03101e99),url("https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74518/world.200412.3x5400x2700.jpg");background-size:cover;background-position:center;box-shadow:inset -24px -12px 32px #020914cc,inset 8px 5px 18px #a4e6ff33,0 0 55px #4ccfa155;animation:earth-turn 45s linear infinite}
+.globe{width:220px;height:220px;border-radius:50%;position:relative;z-index:1;background-color:#06152b;background-image:url("https://svs.gsfc.nasa.gov/vis/a000000/a002900/a002915/bluemarble-2048.png");background-size:200% 100%;background-position:0% center;box-shadow:inset -24px -12px 32px #020914cc,inset 8px 5px 18px #a4e6ff33,0 0 55px #4ccfa155;animation:earth-turn 45s linear infinite}
 @keyframes earth-turn{from{background-position:center,0% center}to{background-position:center,100% center}}
 @media (prefers-reduced-motion:reduce){.globe{animation:none}}
 section{margin-top:44px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}h2{font-size:1.55rem;margin:0 0 8px}.search{width:min(100%,340px);padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1727;color:var(--text);font:inherit}
@@ -46,7 +46,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 </div>
 <div id="detail" class="detail" aria-live="polite"><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore countries</button><button class="action secondary" id="saveBtn">Save destination</button></div><div id="places" class="grid" style="margin-top:18px"></div><div id="savedPanel" style="margin-top:18px"></div><p id="status" style="margin-bottom:0"></p></div>
 </section>
-<p class="note">Foundation preview: choose a continent, explore sample countries and cities, and save places in this browser. The globe uses a NASA Earth texture; accurate interactive maps are a later stage. Accurate interactive maps, accounts, the virtual economy, and multiplayer features are later stages.</p>
+<p class="note">Foundation preview: choose a continent, explore sample countries and cities, and save places in this browser. The globe uses NASA Blue Marble satellite-based imagery; accurate interactive maps are a later stage. Accurate interactive maps, accounts, the virtual economy, and multiplayer features are later stages.</p>
 </main>
 <footer>Virtual Earth · Early foundation build</footer>
 <script>
