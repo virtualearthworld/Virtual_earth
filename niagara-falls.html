@@ -47,6 +47,7 @@ const markerLayer=L.layerGroup().addTo(map);
 function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';markerLayer.clearLayers();L.marker([item.lat,item.lon]).addTo(markerLayer).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc).openPopup()}
 const list=document.getElementById('places');
 places.forEach(item=>{const b=document.createElement('button');b.className='place';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
+choose(places[0]);
 L.marker([43.0896,-79.0849]).addTo(map).bindPopup('Niagara Falls, Ontario — start exploring').openPopup();
 </script>
 </body>
