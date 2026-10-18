@@ -56,7 +56,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
   <p id="journeyStatus" style="margin:10px 0 0;font-size:.9rem">Start by choosing a continent.</p>
 </section>
 
-<section>
+<section id="legacyExplorer" hidden>
 <div class="section-head"><div><h2>Choose a region</h2><p style="margin:0">Select a continent to begin exploring.</p></div><input id="search" class="search" type="search" placeholder="Search continents…" aria-label="Search continents"></div>
 <div id="regions" class="grid">
 <button class="card" data-name="Africa" data-desc="Explore countries, cities, and destinations across Africa."><span class="emoji">🌍</span><h3>Africa</h3><p>Countries, cities, and destinations.</p></button>
@@ -275,7 +275,7 @@ continentSelect.addEventListener('change',()=>{resetAfter(1);fillSelect(countryS
 countrySelect.addEventListener('change',()=>{resetAfter(2);const regions=journeyData[continentSelect.value]?.[countrySelect.value]||{};fillSelect(regionSelect,'Choose a province / state / region',Object.keys(regions));journeyStatus.textContent=countrySelect.value?'Now choose a province, state, or region in '+countrySelect.value+'.':''});
 regionSelect.addEventListener('change',()=>{resetAfter(3);const cities=journeyData[continentSelect.value]?.[countrySelect.value]?.[regionSelect.value]||[];fillSelect(citySelect,'Choose a city / destination',cities);journeyStatus.textContent=regionSelect.value?'Now choose a city or destination in '+regionSelect.value+'.':''});
 citySelect.addEventListener('change',()=>{openDestination.disabled=!citySelect.value;journeyStatus.textContent=citySelect.value?'Selected path: '+continentSelect.value+' › '+countrySelect.value+' › '+regionSelect.value+' › '+citySelect.value+'.':''});
-openDestination.addEventListener('click',()=>{if(citySelect.value)window.location.href='place-explorer.html?q='+encodeURIComponent(citySelect.value+', '+regionSelect.value+', '+countrySelect.value)});
+openDestination.addEventListener('click',()=>{if(!citySelect.value)return;if(citySelect.value==='Niagara Falls'){window.location.href='niagara-falls.html';return}window.location.href='place-explorer.html?q='+encodeURIComponent(citySelect.value+', '+regionSelect.value+', '+countrySelect.value)});
 document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Start by choosing a continent.'});
 
 </script>
