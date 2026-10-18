@@ -53,11 +53,13 @@ const places=[
 const map=L.map('map').setView([43.0896,-79.0849],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 const markerLayer=L.layerGroup().addTo(map);
-function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';markerLayer.clearLayers();L.marker([item.lat,item.lon]).addTo(markerLayer).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc).openPopup()}
+const allMarkers=L.layerGroup().addTo(map);
+const markerByName=new Map();
+function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';markerLayer.clearLayers();const selectedMarker=markerByName.get(item.name);if(selectedMarker)selectedMarker.openPopup()}
 const list=document.getElementById('places');
-places.forEach(item=>{const b=document.createElement('button');b.className='place';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
+places.forEach(item=>{const pin=L.marker([item.lat,item.lon]).addTo(allMarkers).bindPopup('<strong>'+item.name+'</strong><br>'+item.desc);pin.on('click',()=>choose(item));markerByName.set(item.name,pin);const b=document.createElement('button');b.className='place';const strong=document.createElement('strong');strong.textContent=item.name;const small=document.createElement('small');small.textContent='Show on map';b.append(strong,small);b.addEventListener('click',()=>choose(item));list.appendChild(b)});
 choose(places[0]);
-L.marker([43.0896,-79.0849]).addTo(map).bindPopup('Niagara Falls, Ontario — start exploring').openPopup();
+// All locations are visible as clickable map markers.
 </script>
 </body>
 </html>
