@@ -58,20 +58,20 @@ const markerByName=new Map();
 function choose(item){map.flyTo([item.lat,item.lon],item.zoom,{duration:1});document.getElementById('placeTitle').textContent=item.name;document.getElementById('placeInfo').textContent=item.desc;document.getElementById('status').textContent='Map centered on '+item.name+'.';const photoBox=document.getElementById("placePhoto");photoBox.replaceChildren();if(item.name==="Skylon Tower"){
 const galleryTitle=document.createElement("p");galleryTitle.className="galleryTitle";galleryTitle.textContent="Views from Skylon Tower — click a photo to enlarge";photoBox.append(galleryTitle);
 const photos=[
-{title:"Skylon Tower",file:"Skylon Tower, Niagara Falls, Ontario (29691459010).jpg",credit:"Photo: Ken Lund · CC BY-SA 2.0",source:"https://commons.wikimedia.org/wiki/File:Skylon_Tower,_Niagara_Falls,_Ontario_(29691459010).jpg"},
-{title:"Niagara Falls from the tower",file:"Niagara Falls seen from Skylon tower.jpg",credit:"Photo: Tenryuu1919 · CC0",source:"https://commons.wikimedia.org/wiki/File:Niagara_Falls_seen_from_Skylon_tower.jpg"},
-{title:"Horseshoe Falls panorama",file:"NiagaraFallsSkylon.jpg",credit:"Photo: Cimosteve · CC0",source:"https://commons.wikimedia.org/wiki/File:NiagaraFallsSkylon.jpg"},
-{title:"Downtown Niagara Falls",file:"View from Skylon Tower 2023m.jpg",credit:"Photo: Antony-22 · CC BY-SA 4.0",source:"https://commons.wikimedia.org/wiki/File:View_from_Skylon_Tower_2023m.jpg"}
+{title:"Skylon Tower",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Skylon_Tower_%28Niagara_Falls%29_in_October_2024.jpg/960px-Skylon_Tower_%28Niagara_Falls%29_in_October_2024.jpg",credit:"TheWxResearcher · CC0"},
+{title:"Horseshoe Falls from Skylon Tower",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Niagara_Falls_seen_from_Skylon_tower.jpg/960px-Niagara_Falls_seen_from_Skylon_tower.jpg",credit:"Tenryuu1919 · CC0"},
+{title:"Wide Niagara Falls panorama",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/NiagaraFallsSkylon.jpg/960px-NiagaraFallsSkylon.jpg",credit:"Cimosteve · CC0"},
+{title:"Falls and surrounding city",url:"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Niagara_Falls_from_Skylon.jpg/960px-Niagara_Falls_from_Skylon.jpg",credit:"Contact.ankur · see source licence"}
 ];
 const galleryGrid=document.createElement("div");galleryGrid.className="photoGallery";
 photos.forEach(entry=>{
 const card=document.createElement("button");card.type="button";card.className="photoCard";card.setAttribute("aria-label","Enlarge photo: "+entry.title);
-const img=document.createElement("img");img.loading="lazy";img.alt=entry.title;img.src="https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(entry.file)+"?width=900";
+const img=document.createElement("img");img.loading="lazy";img.alt=entry.title;img.src=entry.url;
 img.onerror=()=>{card.classList.add("photoUnavailable");img.remove();const msg=document.createElement("span");msg.textContent="Image failed to load";card.prepend(msg)};
 const caption=document.createElement("span");caption.className="photoCaption";caption.textContent=entry.title;
 const credit=document.createElement("span");credit.className="photoCredit";credit.textContent=entry.credit;
 card.append(img,caption,credit);
-card.addEventListener("click",()=>{if(!img.isConnected || !img.src) return;let modal=document.getElementById("photoLightbox");if(!modal){modal=document.createElement("div");modal.id="photoLightbox";modal.className="photoLightbox";modal.innerHTML='<button class="lightboxClose" aria-label="Close photo">×</button><img alt=""><div class="lightboxCaption"></div><a class="lightboxSource" target="_blank" rel="noopener noreferrer">Photo source and licence</a>';document.body.append(modal);modal.querySelector(".lightboxClose").addEventListener("click",()=>modal.classList.remove("open"));modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("open")});document.addEventListener("keydown",e=>{if(e.key==="Escape")modal.classList.remove("open")})}const large=modal.querySelector("img");large.src=img.src;large.alt=entry.title;modal.querySelector(".lightboxCaption").textContent=entry.title+" — "+entry.credit;modal.querySelector(".lightboxSource").href=entry.source;modal.classList.add("open")});
+card.addEventListener("click",()=>{if(!img.isConnected || !img.src) return;let modal=document.getElementById("photoLightbox");if(!modal){modal=document.createElement("div");modal.id="photoLightbox";modal.className="photoLightbox";modal.innerHTML='<button class="lightboxClose" aria-label="Close photo">×</button><img alt=""><div class="lightboxCaption"></div>';document.body.append(modal);modal.querySelector(".lightboxClose").addEventListener("click",()=>modal.classList.remove("open"));modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("open")});document.addEventListener("keydown",e=>{if(e.key==="Escape")modal.classList.remove("open")})}const large=modal.querySelector("img");large.src=img.src;large.alt=entry.title;modal.querySelector(".lightboxCaption").textContent=entry.title+" — "+entry.credit;modal.classList.add("open")});
 galleryGrid.append(card);
 });
 photoBox.append(galleryGrid);
