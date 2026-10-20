@@ -250,41 +250,6 @@ loadWorldCountries();
 
 </script>
 
-<script>
-/* Independent fallback controller for destination dropdowns. */
-(function(){
-  const ids=['continentSelect','countrySelect','regionSelect','citySelect','openDestination'];
-  let els={};
-  ids.forEach(id=>{
-    const old=document.getElementById(id);
-    if(!old)return;
-    const fresh=old.cloneNode(true);
-    old.parentNode.replaceChild(fresh,old);
-    els[id]=fresh;
-  });
-  const continent=els.continentSelect,country=els.countrySelect,region=els.regionSelect,city=els.citySelect,go=els.openDestination;
-  if(!continent||!country||!region||!city||!go)return;
-  const data={
-    'North America':{'Canada':{'Ontario':['Toronto','Brampton','Niagara Falls','Ottawa'],'Quebec':['Montreal','Quebec City'],'British Columbia':['Vancouver','Victoria']},'United States':{'California':['Los Angeles','San Francisco','San Diego'],'New York':['New York City','Buffalo'],'New Jersey':['Newark','Jersey City'],'Texas':['Houston','Dallas']},'Mexico':{'Jalisco':['Guadalajara'],'Mexico City':['Mexico City'],'Nuevo León':['Monterrey']}},
-    'Asia':{'India':{'Punjab':['Ludhiana','Amritsar','Jalandhar'],'Maharashtra':['Mumbai','Pune','Nagpur'],'Delhi':['New Delhi'],'Karnataka':['Bengaluru']},'Japan':{'Tokyo Metropolis':['Tokyo'],'Osaka Prefecture':['Osaka'],'Kyoto Prefecture':['Kyoto']},'China':{'Beijing':['Beijing'],'Shanghai':['Shanghai']}},
-    'Europe':{'United Kingdom':{'England':['London','Manchester','Liverpool'],'Scotland':['Edinburgh','Glasgow']},'France':{'Île-de-France':['Paris'],'Auvergne-Rhône-Alpes':['Lyon']},'Germany':{'Berlin':['Berlin'],'Bavaria':['Munich']}},
-    'Africa':{'Egypt':{'Cairo Governorate':['Cairo'],'Alexandria Governorate':['Alexandria']},'Nigeria':{'Lagos':['Lagos'],'Federal Capital Territory':['Abuja']}},
-    'South America':{'Brazil':{'São Paulo':['São Paulo'],'Rio de Janeiro':['Rio de Janeiro']},'Argentina':{'Buenos Aires':['Buenos Aires']}},
-    'Oceania':{'Australia':{'New South Wales':['Sydney'],'Victoria':['Melbourne']},'New Zealand':{'Auckland':['Auckland'],'Wellington':['Wellington']}},
-    'Antarctica':{'Antarctica':{'Antarctica':['Antarctica']}}
-  };
-  function fill(el,placeholder,items){el.replaceChildren(new Option(placeholder,''));items.forEach(v=>el.add(new Option(v,v)));el.disabled=items.length===0;}
-  fill(continent,'Choose a continent',Object.keys(data));fill(country,'Choose a country',[]);fill(region,'Choose a province / state / region',[]);fill(city,'Choose a city / destination',[]);go.disabled=true;
-  continent.addEventListener('change',()=>{fill(country,'Choose a country',Object.keys(data[continent.value]||{}));fill(region,'Choose a province / state / region',[]);fill(city,'Choose a city / destination',[]);go.disabled=true;});
-  country.addEventListener('change',()=>{fill(region,'Choose a province / state / region',Object.keys((data[continent.value]||{})[country.value]||{}));fill(city,'Choose a city / destination',[]);go.disabled=true;});
-  region.addEventListener('change',()=>{fill(city,'Choose a city / destination',(((data[continent.value]||{})[country.value]||{})[region.value]||[]));go.disabled=true;});
-  city.addEventListener('change',()=>{go.disabled=!city.value;});
-  go.addEventListener('click',()=>{if(!city.value)return;const query=city.value+', '+region.value+', '+country.value;window.location.href='place-explorer.html?q='+encodeURIComponent(query)+'&destination=1';});
-  const reset=document.getElementById('resetDestination');
-  if(reset)reset.addEventListener('click',()=>{continent.value='';fill(country,'Choose a country',[]);fill(region,'Choose a province / state / region',[]);fill(city,'Choose a city / destination',[]);go.disabled=true;});
-  const status=document.getElementById('journeyStatus');
-  if(status)status.textContent='Destination menus are ready. Choose a continent to begin (built-in location list).';
-})();
-</script>
+
 </body>
 </html>
