@@ -50,6 +50,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <div id="systemDetails" class="system-details" aria-live="polite"><h3 id="systemDetailsTitle">Start with what you want to do</h3><p id="systemDetailsText">Choose a category to see its activities and subcategories. For example, Work & Earn connects jobs, businesses, banking, and finance rather than treating them as unrelated parts of the world.</p><div id="systemSubcategories" class="subcategories"></div></div>
 </section>
 
+<div id="exploreTravelFolder" hidden>
 <section id="destinationJourney" style="margin-top:34px">
   <div class="section-head"><div><div class="eyebrow">Step-by-step discovery</div><h2>Discover Earth</h2><p style="margin:0">Explore continents, countries, regions, cities, maps, and real-world destinations here.</p></div><a class="action secondary" href="discover.html">Open Discover Feed</a></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
@@ -84,6 +85,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <div id="detail" class="detail" aria-live="polite"><p id="breadcrumb" style="margin:0 0 8px;font-size:.82rem;color:var(--accent)">Earth › Choose a region</p><h2 id="detailTitle">Explore a region</h2><p id="detailText"></p><div class="actions"><button class="action" id="exploreBtn">Explore countries</button><button class="action secondary" id="saveBtn">Save destination</button></div><div id="places" class="grid" style="margin-top:18px"></div><div id="mapPanel"><h3 id="mapHeading">Interactive world map</h3><div id="worldMap" role="application" aria-label="Interactive map"></div><p id="mapCaption">Choose a country or city to center the map on that place. Map tiles © OpenStreetMap contributors.</p></div><div id="savedPanel" style="margin-top:18px"></div><p id="status" style="margin-bottom:0"></p></div>
 </section>
 <p class="note">Foundation preview: choose a continent, explore sample countries and cities, and save places in this browser. The globe uses NASA Blue Marble satellite-based imagery; accurate interactive maps are a later stage. Accurate interactive maps, accounts, the virtual economy, and multiplayer features are later stages.</p>
+</div>
 </main>
 <footer>Virtual Earth · Early foundation build</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -102,6 +104,7 @@ document.getElementById("systemDetailsText").textContent=item.text;
 const list=document.getElementById("systemSubcategories");list.innerHTML="";
 item.items.forEach(pair=>{const div=document.createElement("div");div.className="subcategory";const strong=document.createElement("strong");strong.textContent=pair[0];const span=document.createElement("span");span.textContent=pair[1];div.append(strong,span);list.appendChild(div)});
 document.getElementById("systemDetails").scrollIntoView({behavior:"smooth",block:"nearest"});
+if(button.dataset.action==="explore"){const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;document.getElementById("destinationJourney").scrollIntoView({behavior:"smooth",block:"start"});}
 }));
 const cards=[...document.querySelectorAll('.card')];
 let selected=null, currentLevel='region';
