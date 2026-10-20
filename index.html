@@ -41,7 +41,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <div class="section-head"><div><div class="eyebrow">Your virtual life</div><h2>What do you want to do?</h2><p style="margin:0;max-width:680px">Choose what you came here for. Each area will connect to the people, places, and systems you need.</p></div></div>
 <div class="systems-grid" aria-label="What you can do in Virtual Earth">
 <button class="system-card" type="button" data-action="daily"><span class="emoji">🏠</span><h3>Daily Life</h3><p>Live your virtual day: home, food, shopping, healthcare, and everyday services.</p><span class="system-state">Live & manage daily life</span></button>
-<a class="system-card" href="discover.html"><span class="emoji">🎮</span><h3>Entertainment & Relaxation</h3><p>Play games, watch shows, enjoy videos and music, browse photos, and unwind.</p><span class="system-state">Preview available</span></a>
+<button class="system-card" type="button" data-action="entertainment"><span class="emoji">🎮</span><h3>Entertainment &amp; Relaxation</h3><p>Play games, watch shows, enjoy videos and music, browse photos, and unwind.</p><span class="system-state">Explore entertainment activities</span></button>
 <button class="system-card" type="button" data-action="work"><span class="emoji">💼</span><h3>Work & Earn</h3><p>Find a job, build a career, start a business, provide services, and manage your money.</p><span class="system-state">Explore work subcategories</span></button>
 <button class="system-card" type="button" data-action="explore"><span class="emoji">🌍</span><h3>Explore & Travel</h3><p>Discover countries and cities, visit places, and travel around the virtual world.</p><span class="system-state">Location explorer available</span></button>
 <button class="system-card" type="button" data-action="learn"><span class="emoji">🎓</span><h3>Learn & Grow</h3><p>Go to school or university, take courses, learn skills, and develop a profession.</p><span class="system-state">Education included</span></button>
@@ -66,6 +66,11 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
   <iframe src="discover.html" title="Discover Earth visual place explorer" loading="lazy" style="display:block;width:100%;height:1450px;border:1px solid var(--line);border-radius:18px;background:var(--panel)"></iframe>
 </section>
 
+<section id="exploreChallenges" style="margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:18px;background:#0b1929">
+<div class="section-head"><div><div class="eyebrow">Earn by exploring</div><h2>Explore &amp; Travel Challenges</h2><p style="margin:0">Complete a destination challenge to earn coins.</p></div><div class="coin-wallet">🪙 <strong id="exploreChallengeBalance">0</strong> coins</div></div>
+<article class="challenge-card" style="margin-top:14px;max-width:520px"><div class="challenge-meta">Explore &amp; Travel · 🪙 20 coins</div><h3>Discover Niagara Falls</h3><p>Open the Niagara Falls destination page, explore its highlights, then return here to claim your challenge reward.</p><a class="action secondary" href="niagara-falls.html" style="display:inline-block;text-align:center;text-decoration:none">Open Niagara Falls</a><button id="claimNiagaraChallenge" class="challenge-button" style="margin-top:8px">Mark challenge complete · +20 coins</button></article>
+<p id="exploreChallengeStatus" class="challenge-status" aria-live="polite">Destination challenge rewards are shared with your main virtual coin balance.</p>
+</section>
 <section id="destinationJourney" style="margin-top:34px">
   <div class="section-head"><div><div class="eyebrow">Step-by-step discovery</div><h2>Discover Earth</h2><p style="margin:0">Explore continents, countries, regions, cities, maps, and real-world destinations here.</p></div></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
@@ -106,6 +111,7 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const actionInfo={
+entertainment:{title:"Entertainment & Relaxation",text:"Enjoy games, videos, music, shows, and other leisure activities.",items:[["Games & Challenges","Play activities and complete challenges for virtual rewards."],["Videos & Music","Explore videos, music, shows, and visual stories."],["Leisure & Events","Discover entertainment experiences and virtual events."]]},
 daily:{title:"Daily Life",text:"The everyday activities that make your virtual life feel lived-in.",items:[["Home & Housing","Choose, rent, furnish, or manage a place to live."],["Food & Shopping","Buy everyday goods and use local shops and services."],["Health & Care","Find healthcare, pharmacies, and personal care services."],["Community Services","Use local facilities and services connected to your area."]]},
 work:{title:"Work & Earn",text:"One destination for earning and managing the economic side of your virtual life.",items:[["Jobs & Professions","Find work, choose a career, hire people, and provide skilled services."],["Business & Commerce","Start a company, build a shop, manufacture goods, or trade with others."],["Banking & Finance","Manage virtual balances, payments, savings, loans, and financial services."],["Investments & Insurance","Explore future virtual markets, investment options, and business protection."],["Construction & Property","Build, own, rent, maintain, or develop virtual properties and businesses."]]},
 explore:{title:"Explore & Travel",text:"Start with real geography, then connect destinations to travel and activities.",items:[["Continents & Countries","Browse the world by continent and country."],["Cities & Destinations","Find cities, landmarks, neighbourhoods, and points of interest."],["Transport & Travel","Future options may include taxis, public transit, flights, ships, and hotels."],["Nature & Culture","Discover landscapes, historic sites, local traditions, and events."]]},
@@ -113,7 +119,7 @@ learn:{title:"Learn & Grow",text:"Education belongs here because people come to 
 connect:{title:"Connect & Create",text:"A social space to meet others, share interests, and publish creative work.",items:[["Friends & Communities","Meet people and join groups based on interests or locations."],["Photos & Videos","Share visual stories and discover other people's posts."],["Creators & Channels","Build a profile and publish regular content."],["Events & Social Activities","Join community gatherings, performances, and shared activities."]]}
 };
 document.querySelectorAll(".system-card[data-action]").forEach(button=>button.addEventListener("click",()=>{
-const item=actionInfo[button.dataset.action];if(!item)return;
+const item=actionInfo[button.dataset.action];if(!item)return;veAwardCategory(button.dataset.action);
 document.getElementById("systemDetailsTitle").textContent=item.title;
 document.getElementById("systemDetailsText").textContent=item.text;
 const list=document.getElementById("systemSubcategories");list.innerHTML="";
@@ -295,8 +301,15 @@ openDestination.addEventListener('click',()=>{if(!citySelect.value)return;const 
 document.getElementById('resetDestination').addEventListener('click',()=>{continentSelect.value='';resetAfter(1);journeyStatus.textContent='Choose a continent to begin.'});
 loadWorldCountries();
 
+const veCategories=[
+{id:"daily",category:"Daily Life",title:"Visit Daily Life",description:"Open the Daily Life category and explore its activities.",reward:5},
+{id:"entertainment",category:"Entertainment & Relaxation",title:"Visit Entertainment & Relaxation",description:"Open the entertainment category and explore its activities.",reward:5},
+{id:"work",category:"Work & Earn",title:"Visit Work & Earn",description:"Open the work and earning category and explore its activities.",reward:5},
+{id:"explore",category:"Explore & Travel",title:"Visit Explore & Travel",description:"Open Explore & Travel to browse destinations and travel challenges.",reward:5},
+{id:"learn",category:"Learn & Grow",title:"Visit Learn & Grow",description:"Open the learning category and explore its activities.",reward:5},
+{id:"connect",category:"Connect & Create",title:"Visit Connect & Create",description:"Open the social and creator category and explore its activities.",reward:5}
+];
 const veChallenges=[
-{id:"explore-niagara",category:"Explore & Travel",title:"Discover Niagara Falls",description:"Open the Niagara Falls destination page and explore its location and highlights.",reward:20,link:"niagara-falls.html",linkLabel:"Open destination"},
 {id:"explore-route",category:"Explore & Travel",title:"Plan a mini world journey",description:"Choose three destinations you would like to visit and make a short travel plan.",reward:15},
 {id:"daily-home",category:"Daily Life",title:"Choose your virtual home",description:"Explore the idea of a home and select the type of place you would like to live in.",reward:10},
 {id:"entertainment-discover",category:"Entertainment & Relaxation",title:"Explore entertainment",description:"Visit the entertainment preview and discover one activity you would enjoy.",reward:10,link:"discover.html",linkLabel:"Open entertainment"},
@@ -308,12 +321,23 @@ const veProgressKey="virtualEarthChallengeProgressV1";
 function veReadProgress(){try{return JSON.parse(localStorage.getItem(veProgressKey))||{coins:0,completed:[]}}catch(e){return{coins:0,completed:[]}}}
 let veProgress=veReadProgress();
 function veSaveProgress(){localStorage.setItem(veProgressKey,JSON.stringify(veProgress));}
+function veAward(id,reward,statusText){
+if(veProgress.completed.includes(id)){if(statusText)document.getElementById("challengeStatus").textContent="You have already earned this reward.";return false}
+veProgress.completed.push(id);veProgress.coins+=reward;veSaveProgress();veUpdateWallet();veRenderChallenges();
+const status=document.getElementById("challengeStatus");if(status&&statusText)status.textContent=statusText;
+const expBalance=document.getElementById("exploreChallengeBalance");if(expBalance)expBalance.textContent=veProgress.coins.toLocaleString();
+return true;
+}
+function veAwardCategory(action){
+const category=veCategories.find(item=>item.id===action);if(!category)return;
+veAward("visit-category-"+category.id,category.reward,"Category visit reward claimed: +"+category.reward+" virtual coins for "+category.category+".");
+}
 function veRenderChallenges(){
 const list=document.getElementById("challengeList");if(!list)return;
 const chosen=document.getElementById("challengeCategory").value;
 list.innerHTML="";
-veChallenges.filter(ch=>chosen==="All"||ch.category===chosen).forEach(ch=>{
-const done=veProgress.completed.includes(ch.id);
+[...veCategories.map(ch=>({...ch,visit:true})),...veChallenges].filter(ch=>chosen==="All"||ch.category===chosen).forEach(ch=>{
+const rewardId=ch.visit?"visit-category-"+ch.id:ch.id;const done=veProgress.completed.includes(rewardId);
 const card=document.createElement("article");card.className="challenge-card";
 const category=document.createElement("div");category.className="challenge-meta";category.textContent=ch.category+" · 🪙 "+ch.reward+" coins";
 const title=document.createElement("h3");title.textContent=ch.title;
@@ -321,11 +345,13 @@ const desc=document.createElement("p");desc.textContent=ch.description;
 card.append(category,title,desc);
 if(ch.link){const a=document.createElement("a");a.href=ch.link;a.className="action secondary";a.style.cssText="display:inline-block;text-align:center;text-decoration:none;margin:2px 0 6px";a.textContent=ch.linkLabel;card.appendChild(a)}
 const btn=document.createElement("button");btn.className="challenge-button";btn.textContent=done?"✓ Reward claimed":"Mark challenge complete · +"+ch.reward+" coins";btn.disabled=done;
-btn.addEventListener("click",()=>{if(veProgress.completed.includes(ch.id))return;veProgress.completed.push(ch.id);veProgress.coins+=ch.reward;veSaveProgress();veUpdateWallet();veRenderChallenges();document.getElementById("challengeStatus").textContent="Challenge marked complete. "+ch.reward+" virtual coins added. This is a local prototype; challenge completion is not independently verified yet.";});
+btn.addEventListener("click",()=>{if(ch.visit){document.getElementById("challengeStatus").textContent="Open the "+ch.category+" category card above to claim its visit reward.";document.querySelector(`[data-action="${ch.id}"]`)?.scrollIntoView({behavior:"smooth",block:"center"});return;}veAward(ch.id,ch.reward,"Challenge marked complete. "+ch.reward+" virtual coins added. This is a local prototype; challenge completion is not independently verified yet.");});
 card.appendChild(btn);list.appendChild(card);
 });
 }
 function veUpdateWallet(){const balance=document.getElementById("coinBalance");if(balance)balance.textContent=veProgress.coins.toLocaleString()}
+const claimNiagara=document.getElementById("claimNiagaraChallenge");
+if(claimNiagara){const alreadyClaimed=veProgress.completed.includes("explore-niagara");claimNiagara.disabled=alreadyClaimed;if(alreadyClaimed)claimNiagara.textContent="✓ Reward claimed";claimNiagara.addEventListener("click",()=>{const won=veAward("explore-niagara",20,"Niagara Falls challenge marked complete. 20 virtual coins added. This is a local prototype; completion is not independently verified yet.");claimNiagara.disabled=true;claimNiagara.textContent=won?"✓ Reward claimed":"✓ Already claimed";document.getElementById("exploreChallengeBalance").textContent=veProgress.coins.toLocaleString();});}
 document.getElementById("challengeCategory").addEventListener("change",veRenderChallenges);
 veUpdateWallet();veRenderChallenges();
 
