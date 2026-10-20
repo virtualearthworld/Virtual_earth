@@ -128,23 +128,13 @@ document.querySelectorAll(".system-card[data-action]").forEach(button=>button.ad
 const action=button.dataset.action;
 const item=actionInfo[action];if(!item)return;
 veAwardCategory(action);
-const experience=document.getElementById("categoryExperience");
-const exploreFolder=document.getElementById("exploreTravelFolder");
 if(action==="explore"){
- experience.hidden=true;
- exploreFolder.hidden=false;
- document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});
- return;
+document.getElementById("categoryExperience").hidden=true;
+const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;
+document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});
+return;
 }
-exploreFolder.hidden=true;
-document.getElementById("categoryExperienceTitle").textContent=item.title;
-document.getElementById("categoryExperienceText").textContent=item.text;
-document.getElementById("categoryExperienceBalance").textContent=String(veProgress.coins);
-document.getElementById("categoryExperienceStatus").textContent="You opened "+item.title+". Your category visit reward is available once.";
-const list=document.getElementById("categoryExperienceItems");list.innerHTML="";
-item.items.forEach(pair=>{const div=document.createElement("div");div.className="subcategory";const strong=document.createElement("strong");strong.textContent=pair[0];const span=document.createElement("span");span.textContent=pair[1];div.append(strong,span);list.appendChild(div)});
-experience.hidden=false;
-experience.scrollIntoView({behavior:"smooth",block:"start"});
+window.location.href="category.html?category="+encodeURIComponent(action);
 }));
 document.getElementById("categoryBackButton").addEventListener("click",()=>{
 document.getElementById("categoryExperience").hidden=true;
