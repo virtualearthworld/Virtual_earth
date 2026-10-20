@@ -112,7 +112,7 @@ document.getElementById("systemDetailsText").textContent=item.text;
 const list=document.getElementById("systemSubcategories");list.innerHTML="";
 item.items.forEach(pair=>{const div=document.createElement("div");div.className="subcategory";const strong=document.createElement("strong");strong.textContent=pair[0];const span=document.createElement("span");span.textContent=pair[1];div.append(strong,span);list.appendChild(div)});
 document.getElementById("systemDetails").scrollIntoView({behavior:"smooth",block:"nearest"});
-if(button.dataset.action==="explore"){const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;document.getElementById("destinationJourney").scrollIntoView({behavior:"smooth",block:"start"});}
+if(button.dataset.action==="explore"){const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});}
 }));
 const cards=[...document.querySelectorAll('.card')];
 let selected=null, currentLevel='region';
