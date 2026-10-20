@@ -128,12 +128,6 @@ document.querySelectorAll(".system-card[data-action]").forEach(button=>button.ad
 const action=button.dataset.action;
 const item=actionInfo[action];if(!item)return;
 veAwardCategory(action);
-if(action==="explore"){
-document.getElementById("categoryExperience").hidden=true;
-const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;
-document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});
-return;
-}
 window.location.href="category.html?category="+encodeURIComponent(action);
 }));
 document.getElementById("categoryBackButton").addEventListener("click",()=>{
