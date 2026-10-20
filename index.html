@@ -47,6 +47,12 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <button class="system-card" type="button" data-action="learn"><span class="emoji">🎓</span><h3>Learn & Grow</h3><p>Go to school or university, take courses, learn skills, and develop a profession.</p><span class="system-state">Education included</span></button>
 <button class="system-card" type="button" data-action="connect"><span class="emoji">🤝</span><h3>Connect & Create</h3><p>Meet people, join communities, share photos and videos, and create content.</p><span class="system-state">Creator preview available</span></button>
 </div>
+<section id="categoryExperience" hidden style="margin:26px 0;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel)">
+  <button type="button" id="categoryBackButton" class="secondary-button" style="margin-bottom:16px">← Back to all categories</button>
+  <div class="section-head"><div><div class="eyebrow">Your Virtual Earth area</div><h2 id="categoryExperienceTitle">Category</h2><p id="categoryExperienceText" style="margin:0;max-width:720px"></p></div><div class="coin-wallet">🪙 <strong id="categoryExperienceBalance">0</strong> coins</div></div>
+  <div id="categoryExperienceItems" class="subcategories"></div>
+  <p class="challenge-status" id="categoryExperienceStatus">You are exploring this area of Virtual Earth.</p>
+</section>
 <section id="challengeCenter" aria-labelledby="challengeHeading">
 <div class="section-head"><div><div class="eyebrow">One shared virtual economy</div><h2 id="challengeHeading">Challenges &amp; Rewards</h2><p style="margin:0">Earn virtual coins by completing activities across Virtual Earth. Each challenge can reward you once in this prototype.</p></div>
 <div class="coin-wallet" aria-live="polite">🪙 Balance: <strong id="coinBalance">0</strong> coins</div></div>
@@ -119,14 +125,31 @@ learn:{title:"Learn & Grow",text:"Education belongs here because people come to 
 connect:{title:"Connect & Create",text:"A social space to meet others, share interests, and publish creative work.",items:[["Friends & Communities","Meet people and join groups based on interests or locations."],["Photos & Videos","Share visual stories and discover other people's posts."],["Creators & Channels","Build a profile and publish regular content."],["Events & Social Activities","Join community gatherings, performances, and shared activities."]]}
 };
 document.querySelectorAll(".system-card[data-action]").forEach(button=>button.addEventListener("click",()=>{
-const item=actionInfo[button.dataset.action];if(!item)return;veAwardCategory(button.dataset.action);
-document.getElementById("systemDetailsTitle").textContent=item.title;
-document.getElementById("systemDetailsText").textContent=item.text;
-const list=document.getElementById("systemSubcategories");list.innerHTML="";
+const action=button.dataset.action;
+const item=actionInfo[action];if(!item)return;
+veAwardCategory(action);
+const experience=document.getElementById("categoryExperience");
+const exploreFolder=document.getElementById("exploreTravelFolder");
+if(action==="explore"){
+ experience.hidden=true;
+ exploreFolder.hidden=false;
+ document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});
+ return;
+}
+exploreFolder.hidden=true;
+document.getElementById("categoryExperienceTitle").textContent=item.title;
+document.getElementById("categoryExperienceText").textContent=item.text;
+document.getElementById("categoryExperienceBalance").textContent=String(veProgress.coins);
+document.getElementById("categoryExperienceStatus").textContent="You opened "+item.title+". Your category visit reward is available once.";
+const list=document.getElementById("categoryExperienceItems");list.innerHTML="";
 item.items.forEach(pair=>{const div=document.createElement("div");div.className="subcategory";const strong=document.createElement("strong");strong.textContent=pair[0];const span=document.createElement("span");span.textContent=pair[1];div.append(strong,span);list.appendChild(div)});
-document.getElementById("systemDetails").scrollIntoView({behavior:"smooth",block:"nearest"});
-if(button.dataset.action==="explore"){const folder=document.getElementById("exploreTravelFolder");folder.hidden=false;document.getElementById("discoverEarthExperience").scrollIntoView({behavior:"smooth",block:"start"});}
+experience.hidden=false;
+experience.scrollIntoView({behavior:"smooth",block:"start"});
 }));
+document.getElementById("categoryBackButton").addEventListener("click",()=>{
+document.getElementById("categoryExperience").hidden=true;
+document.getElementById("worldSystems").scrollIntoView({behavior:"smooth",block:"start"});
+});
 const cards=[...document.querySelectorAll('.card')];
 let selected=null, currentLevel='region';
 const detail=document.getElementById('detail'),title=document.getElementById('detailTitle'),desc=document.getElementById('detailText'),breadcrumb=document.getElementById('breadcrumb'),status=document.getElementById('status'),places=document.getElementById('places'),exploreBtn=document.getElementById('exploreBtn'),saveBtn=document.getElementById('saveBtn'),savedPanel=document.getElementById('savedPanel');
