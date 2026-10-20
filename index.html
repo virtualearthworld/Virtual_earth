@@ -22,10 +22,10 @@ p{color:var(--muted);line-height:1.65}.hero p{max-width:620px;font-size:1.06rem}
 @keyframes earth-turn{from{background-position:0% center}to{background-position:100% center}}
 @media (prefers-reduced-motion:reduce){.globe{animation:none}}
 section{margin-top:44px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}h2{font-size:1.55rem;margin:0 0 8px}.search{width:min(100%,340px);padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0a1727;color:var(--text);font:inherit}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s}.card:hover,.card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.emoji{font-size:1.8rem}.card h3{margin:10px 0 5px}.card p{font-size:.92rem;margin:0}.detail{margin-top:18px;padding:22px;border-radius:18px;background:#0b1929;border:1px solid var(--line);display:none}.detail.open{display:block}#mapPanel{margin-top:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a1727}#mapHeading{padding:14px 16px;margin:0;color:var(--text);font-size:1rem}#worldMap{height:340px;width:100%;background:#dbe7ed}#mapCaption{padding:10px 16px;margin:0;font-size:.85rem}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button.action{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#072219}button.secondary{background:#1c3048;color:var(--text);border:1px solid var(--line)}.note{font-size:.82rem;margin-top:25px;border-top:1px solid var(--line);padding-top:18px}
+.systems-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.system-card{display:block;width:100%;text-align:left;text-decoration:none;color:var(--text);font:inherit;background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;cursor:pointer;transition:transform .15s,border-color .15s}.system-card:hover,.system-card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.system-card h3{margin:10px 0 5px;font-size:1.05rem}.system-card p{font-size:.9rem;margin:0 0 14px}.system-state{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--accent);font-size:.75rem}.system-details{margin-top:16px;padding:20px;border:1px solid var(--line);border-radius:18px;background:#0b1929}.system-details h3{margin:0 0 7px}.system-details p{margin:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{background:linear-gradient(150deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s}.card:hover,.card:focus{transform:translateY(-2px);border-color:var(--accent);outline:none}.emoji{font-size:1.8rem}.card h3{margin:10px 0 5px}.card p{font-size:.92rem;margin:0}.detail{margin-top:18px;padding:22px;border-radius:18px;background:#0b1929;border:1px solid var(--line);display:none}.detail.open{display:block}#mapPanel{margin-top:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a1727}#mapHeading{padding:14px 16px;margin:0;color:var(--text);font-size:1rem}#worldMap{height:340px;width:100%;background:#dbe7ed}#mapCaption{padding:10px 16px;margin:0;font-size:.85rem}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button.action{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:#072219}button.secondary{background:#1c3048;color:var(--text);border:1px solid var(--line)}.note{font-size:.82rem;margin-top:25px;border-top:1px solid var(--line);padding-top:18px}
 footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:var(--muted);font-size:.85rem}
-@media(max-width:720px){.hero{grid-template-columns:1fr}.earth{min-height:220px}.globe{width:170px;height:170px}.grid{grid-template-columns:1fr 1fr}h1{letter-spacing:-1px}}
-@media(max-width:460px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.earth{min-height:220px}.globe{width:170px;height:170px}.grid,.systems-grid{grid-template-columns:1fr 1fr}h1{letter-spacing:-1px}}
+@media(max-width:460px){.grid,.systems-grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -37,14 +37,21 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 </div>
 
 
-<nav class="grid" aria-label="Virtual Earth sections" style="margin-top:30px">
-  <a class="card" href="discover.html" style="text-decoration:none"><span class="emoji">📸</span><h3>Discover Earth</h3><p>Explore locations, maps, real-world places, nature, history, and culture in one place.</p></a>
-  <a class="card" href="discover.html#categories" style="text-decoration:none"><span class="emoji">🎮</span><h3>Play Games</h3><p>Mini-games and challenges are planned for a later stage.</p></a>
-  <a class="card" href="discover.html#creator-preview" style="text-decoration:none"><span class="emoji">🎨</span><h3>Create</h3><p>Creator profiles and photo uploads are part of the next development phase.</p></a>
-  <a class="card" href="discover.html#categories" style="text-decoration:none"><span class="emoji">🎬</span><h3>Entertainment</h3><p>Discover categories and media experiences as the world grows.</p></a>
-  <a class="card" href="discover.html#economy-preview" style="text-decoration:none"><span class="emoji">🧰</span><h3>Work</h3><p>Virtual jobs and earning activities are planned for the economy.</p></a>
-  <a class="card" href="discover.html#economy-preview" style="text-decoration:none"><span class="emoji">🏗️</span><h3>Build</h3><p>Virtual land, buildings, and businesses will come in later stages.</p></a>
-</nav>
+<section id="worldSystems" class="systems-section" style="margin-top:34px">
+<div class="section-head"><div><div class="eyebrow">How the virtual world works</div><h2>Nine connected world systems</h2><p style="margin:0;max-width:680px">One shared world: places, people, rules, work, money, and everyday life connect to each other.</p></div></div>
+<div class="systems-grid" aria-label="Nine Virtual Earth categories">
+<a class="system-card" href="#destinationJourney"><span class="emoji">🌍</span><h3>Geography, Nature & Resources</h3><p>The foundation: continents, countries, cities, land, oceans, and natural resources.</p><span class="system-state">Foundation</span></a>
+<button class="system-card" type="button" data-system="government"><span class="emoji">🏛️</span><h3>Politics & Government</h3><p>Governments, laws, courts, public safety, citizenship, and public services.</p><span class="system-state">Planned system</span></button>
+<button class="system-card" type="button" data-system="business"><span class="emoji">🏢</span><h3>Business & Commerce</h3><p>Companies, shops, manufacturing, construction, farming, and trade.</p><span class="system-state">Planned system</span></button>
+<button class="system-card" type="button" data-system="work"><span class="emoji">🧰</span><h3>Employment & Professions</h3><p>Jobs, skilled trades, careers, hiring, wages, and independent work.</p><span class="system-state">Planned system</span></button>
+<button class="system-card" type="button" data-system="finance"><span class="emoji">🏦</span><h3>Banking, Finance & Investments</h3><p>Accounts, payments, savings, loans, insurance, and virtual markets.</p><span class="system-state">Planned system</span></button>
+<a class="system-card" href="discover.html"><span class="emoji">🎬</span><h3>Entertainment, Media & Social Life</h3><p>Games, TV, videos, photos, music, social media, creators, and events.</p><span class="system-state">Preview available</span></a>
+<button class="system-card" type="button" data-system="transport"><span class="emoji">🚆</span><h3>Transportation & Travel</h3><p>Roads, taxis, public transit, shipping, flights, hotels, and tourism.</p><span class="system-state">Planned system</span></button>
+<button class="system-card" type="button" data-system="community"><span class="emoji">🏘️</span><h3>Education, Healthcare & Community</h3><p>Schools, colleges, universities, courses, hospitals, housing, and community services.</p><span class="system-state">Planned system</span></button>
+<button class="system-card" type="button" data-system="technology"><span class="emoji">⚙️</span><h3>Science, Technology & Industry</h3><p>Software, AI, research, energy, engineering, machinery, and communications.</p><span class="system-state">Planned system</span></button>
+</div>
+<div id="systemDetails" class="system-details" aria-live="polite"><h3 id="systemDetailsTitle">A connected world, not separate menus</h3><p id="systemDetailsText">For example, opening a construction company could connect a business licence, a building location, workers and wages, bank payments, transport, and local laws. Choose any planned system above to see how it could work.</p></div>
+</section>
 
 <section id="destinationJourney" style="margin-top:34px">
   <div class="section-head"><div><div class="eyebrow">Step-by-step discovery</div><h2>Discover Earth</h2><p style="margin:0">Explore continents, countries, regions, cities, maps, and real-world destinations here.</p></div><a class="action secondary" href="discover.html">Open Discover Feed</a></div>
@@ -84,6 +91,21 @@ footer{border-top:1px solid #ffffff16;padding:22px 20px;text-align:center;color:
 <footer>Virtual Earth · Early foundation build</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+const systemInfo={
+government:["Politics & Government","Governments set rules for each territory. This system could connect elections, citizenship, courts, public safety, licences, and public services to real locations."],
+business:["Business & Commerce","People could start or operate companies, sell goods, build property, manufacture products, farm, and trade. Businesses would connect to workers, customers, locations, transport, finance, and laws."],
+work:["Employment & Professions","People could learn a profession, find work, apply for jobs, provide services, hire workers, and receive virtual wages. Jobs would connect to businesses, training, and payments."],
+finance:["Banking, Finance & Investments","A future in-world financial system could support balances, transfers, saving, loans, insurance, and virtual investment markets. Any real-money features would require separate planning and safeguards."],
+transport:["Transportation & Travel","Travel and logistics could connect roads, taxis, buses, trains, ships, aircraft, ports, airports, hotels, and the movement of people or goods between locations."],
+community:["Education, Healthcare & Community","Education includes schools, colleges, universities, online courses, vocational training, and professional certificates. This system could also include hospitals, housing, libraries, and local services."],
+technology:["Science, Technology & Industry","This system could cover software, AI, research, telecommunications, energy, engineering, machinery, and the infrastructure that helps the virtual world run."]
+};
+document.querySelectorAll(".system-card[data-system]").forEach(button=>button.addEventListener("click",()=>{
+const item=systemInfo[button.dataset.system];if(!item)return;
+document.getElementById("systemDetailsTitle").textContent=item[0];
+document.getElementById("systemDetailsText").textContent=item[1];
+document.getElementById("systemDetails").scrollIntoView({behavior:"smooth",block:"nearest"});
+}));
 const cards=[...document.querySelectorAll('.card')];
 let selected=null, currentLevel='region';
 const detail=document.getElementById('detail'),title=document.getElementById('detailTitle'),desc=document.getElementById('detailText'),breadcrumb=document.getElementById('breadcrumb'),status=document.getElementById('status'),places=document.getElementById('places'),exploreBtn=document.getElementById('exploreBtn'),saveBtn=document.getElementById('saveBtn'),savedPanel=document.getElementById('savedPanel');
