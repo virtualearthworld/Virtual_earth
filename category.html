@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Virtual Earth — Category</title>
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#101e31;--panel2:#172a42;--text:#eef5ff;--muted:#a8bad1;--accent:#69d7b0;--line:#2b4059}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#173251 0,#08111f 58%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px max(16px,calc((100vw - 1100px)/2));background:#08111fee;border-bottom:1px solid #ffffff18}
+.brand{font-weight:850}.brand span{color:var(--accent)}a{color:var(--accent)}.nav{display:flex;gap:8px;flex-wrap:wrap}.link{display:inline-block;text-decoration:none;color:var(--text);border:1px solid var(--line);padding:9px 12px;border-radius:10px}
+main{max-width:1100px;margin:auto;padding:30px 16px 64px}.eyebrow{color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.05;margin:9px 0 12px}h2{margin:0 0 10px}p{color:var(--muted);line-height:1.6}.hero{padding:28px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(140deg,#173451,#101e31 70%)}.hero-row{display:flex;justify-content:space-between;gap:20px;align-items:start;flex-wrap:wrap}.wallet{border:1px solid var(--accent);border-radius:14px;padding:12px 16px;white-space:nowrap}.wallet strong{color:var(--accent);font-size:1.25rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}.tile{border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,var(--panel2),var(--panel));padding:20px}.tile .icon{font-size:2rem}.tile h3{margin:10px 0 6px}.tile p{margin:0}.note{margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:14px;color:var(--muted)}.primary{display:inline-block;background:var(--accent);color:#072219;font-weight:750;text-decoration:none;padding:11px 15px;border-radius:10px;margin-top:12px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding:20px}}
+</style></head>
+<body>
+<header><div class="brand">🌐 Virtual <span>Earth</span></div><nav class="nav"><a class="link" href="index.html">← Back to Home</a><a class="link" href="index.html#challengeHeading">Challenges &amp; Rewards</a></nav></header>
+<main><section class="hero"><div class="hero-row"><div><div class="eyebrow">Your Virtual Earth area</div><h1 id="title">Explore your world</h1><p id="intro" style="max-width:700px;margin-bottom:0"></p></div><div class="wallet">🪙 Your balance<br><strong id="balance">0</strong> coins</div></div><p id="rewardNote"></p></section>
+<section style="margin-top:30px"><div class="eyebrow">Choose your next activity</div><h2 style="margin-top:7px">What would you like to do?</h2><div id="activities" class="grid"></div></section>
+<div class="note" id="status" aria-live="polite">Your progress and demo coin balance are saved in this browser.</div><a class="primary" href="index.html">Return to Virtual Earth home</a>
+</main>
+<script>
+const data={
+daily:{title:"Daily Life",icon:"🏠",intro:"Build your everyday virtual life: choose where to live, get what you need, and use local services.",items:[["🏡","Homes & Housing","Explore homes, choose a place to live, and plan your virtual space."],["🛒","Food & Shopping","Browse food, shops, markets, and everyday purchases."],["🩺","Health & Community Care","Find care services and community support in your area."]]},
+entertainment:{title:"Entertainment & Relaxation",icon:"🎮",intro:"Take a break with games, videos, music, creative stories, and leisure activities.",items:[["🎲","Games & Challenges","Explore casual games and activities to play."],["🎬","Videos, Shows & Movies","Browse entertainment and watch-style experiences."],["🎵","Music & Creative Arts","Discover music, performances, and creative content."]]},
+work:{title:"Work & Earn",icon:"💼",intro:"Build a career or business, provide services, and learn how work and virtual earnings can operate.",items:[["🧰","Jobs & Professions","Explore roles, skills, and work opportunities."],["🏪","Business & Commerce","Plan a business, offer services, and connect with customers."],["🏦","Banking & Finance","View the planned virtual wallet, banking, saving, and finance systems."]]},
+learn:{title:"Learn & Grow",icon:"🎓",intro:"Develop knowledge and practical skills through education, courses, and learning activities.",items:[["🏫","Schools & Universities","Explore educational places and study pathways."],["📚","Courses & Learning","Choose a subject and build knowledge step by step."],["🛠️","Skills & Certifications","Discover practical skills and future certification paths."]]},
+connect:{title:"Connect & Create",icon:"🤝",intro:"Meet people, join communities, share your ideas, and build your own creator presence.",items:[["👥","Friends & Communities","Find groups and community activities."],["📸","Photos & Videos","Explore sharing ideas for photos and short videos."],["🌟","Creators & Events","Plan posts, creator channels, and virtual events."]]}
+};
+const params=new URLSearchParams(location.search);const key=params.get("category");const item=data[key];
+if(!item){document.getElementById("title").textContent="Choose a Virtual Earth category";document.getElementById("intro").textContent="Return home and choose one of the main categories to enter its experience.";}
+else{
+document.title="Virtual Earth — "+item.title;document.getElementById("title").textContent=item.icon+" "+item.title;document.getElementById("intro").textContent=item.intro;
+const list=document.getElementById("activities");item.items.forEach(x=>{const card=document.createElement("article");card.className="tile";card.innerHTML='<div class="icon">'+x[0]+'</div><h3>'+x[1]+'</h3><p>'+x[2]+'</p>';list.appendChild(card)});
+document.getElementById("rewardNote").textContent="Your "+item.title+" category visit reward is handled on the home page and can be earned only once in this browser.";
+}
+function updateBalance(){try{const p=JSON.parse(localStorage.getItem("virtualEarthChallengeProgressV1")||'{"coins":0,"completed":[]}');document.getElementById("balance").textContent=Number(p.coins)||0;}catch{document.getElementById("balance").textContent="0";}}
+updateBalance();
+</script></body></html>
