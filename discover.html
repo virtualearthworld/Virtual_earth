@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Discover Feed — Virtual Earth</title>
+<title>Discover Earth — Virtual Earth</title>
 <meta name="description" content="Discover places, stories, and creators around the world on Virtual Earth.">
 <style>
 :root{color-scheme:dark;--bg:#08111f;--panel:#101e31;--panel2:#172a42;--text:#eef5ff;--muted:#a8bad1;--accent:#69d7b0;--line:#2b4059}
@@ -20,7 +20,7 @@ main{max-width:1080px;margin:auto;padding:28px 16px 60px}.intro{display:flex;jus
 <main>
 <div class="intro"><div><div class="eyebrow">Discover the world</div><h1>One world. Endless stories.</h1><p style="max-width:650px;margin:0">Browse places, landmarks, history, nature, and culture. Like a post, save it, or slide to mark that you explored it.</p></div><span class="pill">Early preview · demo interactions</span></div>
 <div class="toolbar" id="categories" aria-label="Filter photos">
-<button class="filter active" data-category="All">For You</button><button class="filter" data-category="Historical Places">Historical Places</button><button class="filter" data-category="Historical Moments">Historical Moments</button><button class="filter" data-category="Nature">Nature</button><button class="filter" data-category="Architecture">Architecture</button><button class="filter" data-category="Celebrities">Celebrities</button><button class="filter" data-category="Entertainment">Entertainment</button>
+<button class="filter active" data-category="All">For You</button><button class="filter" data-category="Historical Places">Historical Places</button><button class="filter" data-category="Historical Moments">Historical Moments</button><button class="filter" data-category="Nature">Nature</button><button class="filter" data-category="Architecture">Architecture</button><button class="filter" data-category="Entertainment">Entertainment</button>
 </div>
 <div class="layout"><section class="feed" id="feed" aria-label="Discover posts"></section>
 <aside class="sidebar">
@@ -38,7 +38,7 @@ const posts=[
 {id:'mountains',category:'Nature',place:'Mountain landscapes · Worldwide',creator:'Open Horizons',avatar:'🏔️',symbol:'🏔️',caption:'A reminder to explore beyond the places you already know.',tone:'linear-gradient(140deg,#487c91,#526e80 50%,#1a344b)'},
 {id:'architecture',category:'Architecture',place:'Modern city architecture · Worldwide',creator:'City Frames',avatar:'🏙️',symbol:'🏙️',caption:'Buildings tell stories about the people and ideas behind them.',tone:'linear-gradient(140deg,#6c4b91,#264f6a 60%,#152239)'},
 {id:'culture',category:'Historical Moments',place:'Stories from the past · Worldwide',creator:'History Window',avatar:'📚',symbol:'📜',caption:'A category for historic events, archive images, and cultural memories.',tone:'linear-gradient(140deg,#956a43,#514052 60%,#1a2b42)'},
-{id:'celebrity',category:'Celebrities',place:'Celebrity & public culture',creator:'Pop Culture Daily',avatar:'🎭',symbol:'🎭',caption:'A future category for public figures and entertainment culture.',tone:'linear-gradient(140deg,#9a4b6a,#563b71 60%,#1a2841)'},
+
 {id:'entertainment',category:'Entertainment',place:'Entertainment · Worldwide',creator:'The Spotlight',avatar:'🎬',symbol:'🎬',caption:'Discover creative work, performances, and stories from around the world.',tone:'linear-gradient(140deg,#9c5936,#633e68 60%,#17253d)'}
 ];
 const feed=document.getElementById('feed');let current='All';
