@@ -323,7 +323,7 @@ let veProgress=veReadProgress();
 function veSaveProgress(){localStorage.setItem(veProgressKey,JSON.stringify(veProgress));}
 function veAward(id,reward,statusText){
 if(veProgress.completed.includes(id)){if(statusText)document.getElementById("challengeStatus").textContent="You have already earned this reward.";return false}
-veProgress.completed.push(id);veProgress.coins+=reward;veSaveProgress();veUpdateWallet();veRenderChallenges();
+veProgress.completed.push(id);veProgress.coins+=reward;veSaveProgress();veUpdateWallet();const initialExploreBalance=document.getElementById("exploreChallengeBalance");if(initialExploreBalance)initialExploreBalance.textContent=veProgress.coins.toLocaleString();veRenderChallenges();
 const status=document.getElementById("challengeStatus");if(status&&statusText)status.textContent=statusText;
 const expBalance=document.getElementById("exploreChallengeBalance");if(expBalance)expBalance.textContent=veProgress.coins.toLocaleString();
 return true;
