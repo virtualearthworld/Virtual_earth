@@ -1,0 +1,77 @@
+name: Build in-app immersive reconstruction engine
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "immersive-engine/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: immersive-engine-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out Virtual Earth
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out open-source reconstruction engine
+        uses: actions/checkout@v4
+        with:
+          repository: obraia/gausify-orbit
+          ref: main
+          path: gausify-orbit
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: gausify-orbit/pnpm-lock.yaml
+
+      - name: Install WebAssembly build tool
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack@0.15.0
+
+      - name: Install reconstruction engine dependencies
+        working-directory: gausify-orbit
+        run: pnpm install --frozen-lockfile
+
+      - name: Build browser reconstruction engine
+        working-directory: gausify-orbit
+        run: |
+          pnpm web:wasm
+          node --input-type=module -e "import {readFileSync,writeFileSync} from 'node:fs'; const p='web/vite.config.ts'; let s=readFileSync(p,'utf8'); s=s.replace('export default defineConfig({','export default defineConfig({\\n  base: \"/Virtual_earth/immersive-engine/\",'); writeFileSync(p,s);"
+          pnpm web:build
+
+      - name: Install built engine under Virtual Earth
+        run: |
+          rm -rf immersive-engine
+          mkdir -p immersive-engine
+          cp -R gausify-orbit/dist-web/. immersive-engine/
+          test -s immersive-engine/index.html
+
+      - name: Commit built engine for GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add immersive-engine
+          if git diff --cached --quiet; then
+            echo "The in-app engine build is unchanged."
+          else
+            git commit -m "Build self-hosted immersive reconstruction engine"
+            git push
+          fi
