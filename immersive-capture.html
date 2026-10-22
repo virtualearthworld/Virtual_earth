@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Immersive Capture | Virtual Earth</title>
+<meta name="description" content="Explore a place in Creator View or Free Walk Mode — the Virtual Earth immersive capture demo.">
+<style>
+:root{color-scheme:dark;--bg:#071321;--panel:#102239;--line:#29445f;--text:#f1f7ff;--muted:#b3c5d9;--mint:#73e2bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#163854,#071321 65%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px max(18px,calc((100vw - 1120px)/2));border-bottom:1px solid #ffffff18}.brand{font-weight:800}.brand span{color:var(--mint)}a{color:var(--mint)}.back{border:1px solid var(--line);border-radius:10px;padding:9px 12px;text-decoration:none}
+main{max-width:1120px;margin:auto;padding:30px 18px 54px}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:.76rem;font-weight:800;color:var(--mint)}h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1.05;margin:10px 0}p{color:var(--muted);line-height:1.6}.intro{max-width:760px}
+.viewer{position:relative;overflow:hidden;min-height:440px;border:1px solid var(--line);border-radius:24px;margin-top:24px;background:#6cc4d5;isolation:isolate}
+.sky{position:absolute;inset:0 0 48% 0;background:linear-gradient(#58b8e5,#d3eef1 80%,#f4d8a2)}
+.sun{position:absolute;width:74px;height:74px;border-radius:50%;background:#fff1b5;box-shadow:0 0 55px #fff1b5aa;top:9%;right:17%}
+.sea{position:absolute;top:35%;bottom:0;left:-8%;right:-8%;background:linear-gradient(#27a8bf,#087a9c 48%,#064a69);transform:perspective(500px) rotateX(4deg);transform-origin:top;transition:transform .25s,background-position .25s}
+.sea:before{content:"";position:absolute;left:-5%;right:-5%;top:13%;height:5px;background:#d4fbff88;box-shadow:0 24px #d4fbff44,0 55px #d4fbff2a,0 90px #d4fbff20}
+.sand{position:absolute;bottom:-8%;left:-10%;right:-10%;height:40%;background:linear-gradient(170deg,#f5dba1,#d4a96d);clip-path:polygon(0 28%,22% 8%,48% 24%,72% 0,100% 18%,100% 100%,0 100%);transition:transform .25s}
+.palm{position:absolute;bottom:19%;left:13%;width:10px;height:180px;background:#765038;border-radius:50% 50% 0 0;transform:rotate(8deg);transform-origin:bottom;transition:left .3s,bottom .3s}
+.palm:before{content:"";position:absolute;width:125px;height:85px;left:-58px;top:-26px;background:#207f56;clip-path:polygon(48% 45%,0 5%,42% 35%,20% 0,52% 30%,75% 0,63% 36%,100% 18%,70% 52%,100% 70%,55% 62%,30% 100%,43% 61%);filter:drop-shadow(0 2px 2px #124a36)}
+.horizon-label{position:absolute;left:18px;top:18px;background:#071321b8;border:1px solid #ffffff33;border-radius:12px;padding:9px 12px;font-size:.84rem;backdrop-filter:blur(8px)}
+.viewer-status{position:absolute;left:18px;bottom:16px;background:#071321d9;border:1px solid #ffffff33;border-radius:12px;padding:10px 13px;font-size:.85rem;max-width:calc(100% - 36px)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}.mode{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:12px 16px;border-radius:12px;font:inherit;font-weight:750;cursor:pointer}.mode[aria-pressed=true]{background:var(--mint);color:#052319;border-color:var(--mint)}.action{border:1px solid #8eb7d6;background:#173a55;color:white;padding:11px 14px;border-radius:10px;font:inherit;cursor:pointer}.action:disabled{opacity:.4;cursor:not-allowed}
+.help{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}.help article{background:#0d1d30;border:1px solid var(--line);border-radius:16px;padding:18px}.help h2{font-size:1.1rem;margin:0 0 8px}.help p{font-size:.92rem;margin:0}.notice{font-size:.83rem;margin-top:18px;padding:13px 15px;border-left:3px solid var(--mint);background:#102239;border-radius:0 10px 10px 0}
+@media(max-width:620px){.viewer{min-height:390px}.palm{transform:scale(.75) rotate(8deg);left:9%}.help{grid-template-columns:1fr}.horizon-label{font-size:.75rem}.viewer-status{font-size:.78rem}}
+</style></head><body>
+<header><div class="brand">🌍 Virtual <span>Earth</span></div><a class="back" href="index.html">← Back to home</a></header>
+<main><div class="eyebrow">New experience concept</div><h1>Don't just watch a place.<br>Explore it.</h1>
+<p class="intro">Virtual Earth Immersive Capture is a first browser demo of our idea: creators share real places, and visitors choose how they want to experience them.</p>
+<section class="viewer" id="viewer" aria-label="Interactive illustrated beach scene">
+<div class="sky"></div><div class="sun"></div><div class="sea" id="sea"></div><div class="sand" id="sand"></div><div class="palm" id="palm"></div>
+<div class="horizon-label" id="modeLabel">Creator View · Look around</div><div class="viewer-status" id="status" aria-live="polite">Demo beach · Choose a mode below. Drag left or right to look around.</div></section>
+<div class="controls" role="group" aria-label="Choose viewing mode"><button class="mode" id="creator" aria-pressed="true">◉ Creator View</button><button class="mode" id="walk" aria-pressed="false">↗ Free Walk Mode</button><button class="action" id="left" aria-label="Look or move left">← Left</button><button class="action" id="right" aria-label="Look or move right">Right →</button><button class="action" id="forward" disabled>↑ Move forward</button><button class="action" id="reset">Reset view</button></div>
+<div class="help"><article><h2>◉ Creator View — Look around</h2><p>Stay at the creator's recording position and look left or right to see the surroundings.</p></article><article><h2>↗ Free Walk Mode — Explore</h2><p>Move around the sample scene. A real free-walk experience will need a reconstructed 3D environment from suitable video or photos.</p></article></div>
+<div class="notice"><strong>Important:</strong> This is a visual interaction demo, not yet an automatic video-to-3D converter. The beach is an illustration. We are building the experience first; uploads and real-scene reconstruction come later.</div>
+</main>
+<script>
+const viewer=document.getElementById('viewer'),sea=document.getElementById('sea'),sand=document.getElementById('sand'),palm=document.getElementById('palm'),status=document.getElementById('status'),modeLabel=document.getElementById('modeLabel');
+const creator=document.getElementById('creator'),walk=document.getElementById('walk'),forward=document.getElementById('forward');let mode='creator',look=0,steps=0,dragging=false,startX=0;
+function render(){sea.style.backgroundPosition=(look*2+steps*7)+'px 0';sand.style.transform='translateX('+(look*.45-steps*8)+'px)';palm.style.left='calc(13% + '+(look*.8-steps*11)+'px)';palm.style.bottom=(19+Math.min(steps,3)*1.5)+'%';modeLabel.textContent=mode==='creator'?'Creator View · Look around':'Free Walk Mode · Explore';status.textContent=mode==='creator'?'Creator viewpoint · Look left/right or drag the scene.':'Exploration demo · '+steps+' movement step'+(steps===1?'':'s')+'. Use left/right and Move forward.';forward.disabled=mode!=='walk';creator.setAttribute('aria-pressed',mode==='creator');walk.setAttribute('aria-pressed',mode==='walk');}
+creator.addEventListener('click',()=>{mode='creator';render()});walk.addEventListener('click',()=>{mode='walk';render()});
+document.getElementById('left').addEventListener('click',()=>{look-=18;if(mode==='walk')steps=Math.max(0,steps-1);render()});
+document.getElementById('right').addEventListener('click',()=>{look+=18;if(mode==='walk')steps=Math.min(8,steps+1);render()});
+forward.addEventListener('click',()=>{steps=Math.min(8,steps+1);render()});
+document.getElementById('reset').addEventListener('click',()=>{look=0;steps=0;render()});
+viewer.addEventListener('pointerdown',e=>{dragging=true;startX=e.clientX;viewer.setPointerCapture(e.pointerId)});viewer.addEventListener('pointerup',()=>dragging=false);viewer.addEventListener('pointercancel',()=>dragging=false);viewer.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-startX;look+=dx*.35;startX=e.clientX;render()});render();
+</script></body></html>
