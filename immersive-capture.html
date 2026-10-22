@@ -37,6 +37,13 @@ main{max-width:1120px;margin:auto;padding:30px 18px 54px}.eyebrow{text-transform
 <div class="upload-row"><button type="button" class="action" id="prepareFrames" disabled>Prepare frames for 3D</button><span id="captureFileInfo" class="capture-status">No video selected yet.</span></div>
 <p id="captureStatus" class="capture-status" aria-live="polite">No processing has started.</p>
 </section>
+<section class="capture-panel" aria-labelledby="sceneLoadHeading">
+<h2 id="sceneLoadHeading">Open your reconstructed 3D scene</h2>
+<p>After you convert your video with OOOSplat, export its offline HTML viewer (often named <code>preview.html</code>). Choose that HTML file here to open the real reconstructed scene inside Virtual Earth. The file stays on your device.</p>
+<div class="upload-row"><input id="sceneHtmlFile" type="file" accept=".html,text/html" aria-label="Choose exported 3D scene HTML"><button type="button" class="action" id="openSceneHtml" disabled>Open 3D scene</button><button type="button" class="action" id="closeSceneHtml" hidden>Close scene</button></div>
+<p id="sceneHtmlStatus" class="capture-status" aria-live="polite">No exported scene selected.</p>
+<iframe id="sceneHtmlFrame" title="Your reconstructed Virtual Earth scene" hidden allow="fullscreen; xr-spatial-tracking; pointer-lock" style="width:100%;height:min(75vh,760px);min-height:420px;border:1px solid var(--line);border-radius:14px;background:#000;margin-top:14px"></iframe>
+</section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <div class="help"><article><h2>◉ Creator View — Look around</h2><p>Stay at the creator's recording position and look left or right to see the surroundings.</p></article><article><h2>↗ Free Walk Mode — Explore</h2><p>Move around the sample scene. A real free-walk experience will need a reconstructed 3D environment from suitable video or photos.</p></article></div>
 <div class="notice"><strong>Current stage:</strong> The beach is still an illustration, but video frame extraction now works locally in this page. For full video-to-3D reconstruction, we found <a href="https://github.com/ooolabdev/ooosplat" target="_blank" rel="noopener noreferrer">OOOSplat</a>, a free, open-source desktop project that converts videos or image sequences into 3D Gaussian splats on your own computer. The browser demo cannot run that heavy desktop/GPU engine by itself, so the next integration step is connecting exported 3D scenes to this viewer. Check its Mac requirements before installing; its Apple Silicon Mac build is marked Alpha.</div>
@@ -54,6 +61,11 @@ viewer.style.touchAction='none';
 viewer.addEventListener('pointerdown',e=>{dragging=true;startX=e.clientX;viewer.setPointerCapture(e.pointerId)});
 viewer.addEventListener('pointerup',()=>dragging=false);viewer.addEventListener('pointercancel',()=>dragging=false);
 viewer.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-startX;look+=dx*.55;startX=e.clientX;render()});
+const sceneHtmlFile=document.getElementById('sceneHtmlFile'),openSceneHtml=document.getElementById('openSceneHtml'),closeSceneHtml=document.getElementById('closeSceneHtml'),sceneHtmlFrame=document.getElementById('sceneHtmlFrame'),sceneHtmlStatus=document.getElementById('sceneHtmlStatus');
+let sceneHtmlUrl=null;
+sceneHtmlFile.addEventListener('change',()=>{const file=sceneHtmlFile.files&&sceneHtmlFile.files[0];openSceneHtml.disabled=!file;sceneHtmlStatus.textContent=file?'Selected '+file.name+' ('+(file.size/1024/1024).toFixed(1)+' MB). Click Open 3D scene.':'No exported scene selected.';});
+openSceneHtml.addEventListener('click',()=>{const file=sceneHtmlFile.files&&sceneHtmlFile.files[0];if(!file)return;if(sceneHtmlUrl)URL.revokeObjectURL(sceneHtmlUrl);sceneHtmlUrl=URL.createObjectURL(file);sceneHtmlFrame.src=sceneHtmlUrl;sceneHtmlFrame.hidden=false;closeSceneHtml.hidden=false;sceneHtmlStatus.textContent='Opening your selected local scene. Large scenes may take a little time to load.';sceneHtmlFrame.onload=()=>{sceneHtmlStatus.textContent='Scene viewer opened. Use its own controls to look around, orbit, pan, or zoom.';};});
+closeSceneHtml.addEventListener('click',()=>{sceneHtmlFrame.src='about:blank';sceneHtmlFrame.hidden=true;closeSceneHtml.hidden=true;if(sceneHtmlUrl)URL.revokeObjectURL(sceneHtmlUrl);sceneHtmlUrl=null;sceneHtmlStatus.textContent='Scene viewer closed.';});
 const captureFile=document.getElementById('captureFile'),captureVideo=document.getElementById('captureVideo'),prepareFrames=document.getElementById('prepareFrames'),captureStatus=document.getElementById('captureStatus'),captureFileInfo=document.getElementById('captureFileInfo');
 let captureUrl=null;
 captureFile.addEventListener('change',()=>{const file=captureFile.files&&captureFile.files[0];if(!file)return;if(captureUrl)URL.revokeObjectURL(captureUrl);captureUrl=URL.createObjectURL(file);captureVideo.src=captureUrl;captureVideo.hidden=false;prepareFrames.disabled=false;captureFileInfo.textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';captureStatus.textContent='Video selected. Choose a frame interval, then prepare the frame ZIP.';});
