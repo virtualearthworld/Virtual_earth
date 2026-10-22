@@ -39,7 +39,7 @@ main{max-width:1120px;margin:auto;padding:30px 18px 54px}.eyebrow{text-transform
 </section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <div class="help"><article><h2>◉ Creator View — Look around</h2><p>Stay at the creator's recording position and look left or right to see the surroundings.</p></article><article><h2>↗ Free Walk Mode — Explore</h2><p>Move around the sample scene. A real free-walk experience will need a reconstructed 3D environment from suitable video or photos.</p></article></div>
-<div class="notice"><strong>Important:</strong> This is a visual interaction demo, not yet an automatic video-to-3D converter. The beach is an illustration. We are building the experience first; uploads and real-scene reconstruction come later.</div>
+<div class="notice"><strong>Current stage:</strong> The beach is still an illustration, but video frame extraction now works locally in this page. For full video-to-3D reconstruction, we found <a href="https://github.com/ooolabdev/ooosplat" target="_blank" rel="noopener noreferrer">OOOSplat</a>, a free, open-source desktop project that converts videos or image sequences into 3D Gaussian splats on your own computer. The browser demo cannot run that heavy desktop/GPU engine by itself, so the next integration step is connecting exported 3D scenes to this viewer. Check its Mac requirements before installing; its Apple Silicon Mac build is marked Alpha.</div>
 </main>
 <script>
 const viewer=document.getElementById('viewer'),sea=document.getElementById('sea'),sand=document.getElementById('sand'),palm=document.getElementById('palm'),status=document.getElementById('status'),modeLabel=document.getElementById('modeLabel');
