@@ -52,11 +52,48 @@ jobs:
         working-directory: gausify-orbit
         run: pnpm install --frozen-lockfile
 
+      - name: Make project-package saving compatible with browsers without stream compression
+        working-directory: gausify-orbit
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("web/src/host/zip.ts")
+          s = p.read_text()
+          start = s.index("    const method = deflate ? 8 : 0;")
+          end = s.index("    if (read > MAX32 || csize > MAX32)", start)
+          replacement = """    // Use ZIP STORE entries instead of CompressionStream. This avoids
+          // browser-specific deflate-raw/ReadableStream failures when saving packages.
+          const method = 0;
+          const offset = this.offset;
+          if (offset > MAX32) throw new Error("the package exceeds 4 GB, the web version's limit");
+          await this.out(
+            header(30 + nameBytes.length, (v) => {
+              v.setUint32(0, LOCAL, true);
+              v.setUint16(4, 20, true);
+              v.setUint16(6, FLAGS, true);
+              v.setUint16(8, method, true);
+              v.setUint16(12, DOS_DATE, true);
+              v.setUint16(26, nameBytes.length, true);
+              new Uint8Array(v.buffer).set(nameBytes, 30);
+            }),
+          );
+          const bytes = new Uint8Array(await data.arrayBuffer());
+          const crc = crc32(bytes);
+          const read = bytes.length;
+          const csize = bytes.length;
+          onBytes?.(read);
+          await this.out(bytes);
+          """
+          s = s[:start] + replacement + s[end:]
+          p.write_text(s)
+          print("Patched ZIP writer to save package entries without CompressionStream.")
+          PY
+
       - name: Build browser reconstruction engine
         working-directory: gausify-orbit
         run: |
           pnpm web:wasm
-          node --input-type=module -e "import {readFileSync,writeFileSync} from 'node:fs'; const p='web/vite.config.ts'; let s=readFileSync(p,'utf8'); s=s.replace('export default defineConfig({','export default defineConfig({\\n  base: \"/Virtual_earth/immersive-engine/\",'); writeFileSync(p,s);"
+          node --input-type=module -e "import {readFileSync,writeFileSync} from 'node:fs'; const p='web/vite.config.ts'; let s=readFileSync(p,'utf8'); s=s.replace('export default defineConfig({','export default defineConfig({\\n  base: \\"/Virtual_earth/immersive-engine/\\",'); writeFileSync(p,s);"
           pnpm web:build
 
       - name: Install built engine under Virtual Earth
